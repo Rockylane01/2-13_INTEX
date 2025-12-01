@@ -39,7 +39,12 @@ app.get("/events", (req, res) => {
 });
 
 app.get("/donations", (req, res) => {
-  res.render("donations", { title: "Donations" });
+  // later you can pass real data from the database
+  res.render("donations", {
+    title: "Donations",
+    donations: [], // placeholder
+    totalAmount: 0 // placeholder
+  });
 });
 
 // Start server
