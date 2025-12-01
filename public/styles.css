@@ -1,0 +1,231 @@
+/* Ella Rises Inspired Color Scheme */
+/* Based on cultural themes: mariachi, ballet folklorico, STEAM empowerment */
+
+:root {
+    /* Primary Colors - Inspired by Mexican/Latin American culture */
+    --ella-red: #DC143C;          /* Crimson red (from red dress imagery) */
+    --ella-orange: #FF6B35;       /* Vibrant orange (from butterfly) */
+    --ella-gold: #FFD700;         /* Gold accents */
+    --ella-purple: #8B008B;       /* Deep purple for heritage */
+    --ella-teal: #008080;         /* Teal for STEAM/tech theme */
+
+    /* Secondary Colors */
+    --ella-pink: #FF69B4;         /* Hot pink for empowerment */
+    --ella-coral: #FF7F50;        /* Coral for warmth */
+    --ella-maroon: #800000;      /* Maroon for tradition */
+
+    /* Neutral Colors */
+    --ella-cream: #FFF8DC;        /* Cream background */
+    --ella-white: #FFFFFF;        /* Pure white */
+    --ella-light-gray: #F8F8F8;   /* Light gray */
+    --ella-dark-gray: #2F2F2F;    /* Dark gray for text */
+
+    /* Accent Colors */
+    --ella-success: #32CD32;      /* Lime green for success */
+    --ella-warning: #FFA500;      /* Orange for warnings */
+    --ella-info: #00CED1;         /* Dark turquoise for info */
+}
+
+/* Body and General Styles */
+body {
+    background-color: var(--ella-cream);
+    color: var(--ella-dark-gray);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation */
+.navbar {
+    background: linear-gradient(135deg, var(--ella-red), var(--ella-orange)) !important;
+    border-bottom: 3px solid var(--ella-gold);
+}
+
+.navbar-brand {
+    color: var(--ella-white) !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.navbar-nav .nav-link {
+    color: var(--ella-white) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--ella-gold) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, var(--ella-red), var(--ella-maroon));
+    border: 2px solid var(--ella-gold);
+    color: var(--ella-white);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--ella-maroon), var(--ella-red));
+    border-color: var(--ella-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 20, 60, 0.3);
+}
+
+.btn-outline-primary {
+    border-color: var(--ella-red);
+    color: var(--ella-red);
+    font-weight: bold;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--ella-red);
+    border-color: var(--ella-red);
+    color: var(--ella-white);
+}
+
+/* Cards */
+.card {
+    border: 2px solid var(--ella-orange);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--ella-purple), var(--ella-teal));
+    color: var(--ella-white);
+    border-bottom: 2px solid var(--ella-gold);
+    font-weight: bold;
+}
+
+/* Tables */
+.table {
+    background-color: var(--ella-white);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, var(--ella-teal), var(--ella-purple));
+    color: var(--ella-white);
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+/* Form Elements */
+.form-control:focus {
+    border-color: var(--ella-red);
+    box-shadow: 0 0 0 0.2rem rgba(220, 20, 60, 0.25);
+}
+
+.form-label {
+    color: var(--ella-dark-gray);
+    font-weight: 600;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.75em;
+    padding: 0.5em 0.75em;
+    border-radius: 20px;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, var(--ella-success), #228B22) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, var(--ella-warning), #FF8C00) !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, var(--ella-info), #20B2AA) !important;
+}
+
+/* Jumbotron/Hero Section */
+.jumbotron {
+    background: linear-gradient(135deg, var(--ella-red), var(--ella-orange), var(--ella-purple));
+    color: var(--ella-white);
+    border-radius: 15px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, var(--ella-maroon), var(--ella-purple));
+    color: var(--ella-white);
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+/* Cultural Elements */
+.cultural-accent {
+    color: var(--ella-red);
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(220, 20, 60, 0.3);
+}
+
+/* Program Cards */
+.program-card {
+    background: linear-gradient(135deg, var(--ella-white), var(--ella-cream));
+    border: 3px solid;
+    border-image: linear-gradient(45deg, var(--ella-red), var(--ella-orange), var(--ella-gold)) 1;
+    transition: all 0.3s ease;
+}
+
+.program-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .jumbotron {
+        padding: 2rem 1rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Cultural Pattern Background (optional) */
+.cultural-pattern {
+    background-image:
+        radial-gradient(circle at 20% 80%, var(--ella-red) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, var(--ella-orange) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, var(--ella-gold) 0%, transparent 50%);
+    background-size: 100px 100px;
+    opacity: 0.05;
+}
+
+/* Loading Animation */
+@keyframes mariachiDance {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+}
+
+.loading {
+    animation: mariachiDance 2s infinite;
+}

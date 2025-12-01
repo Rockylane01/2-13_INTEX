@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Ella Rises</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-seedling me-2"></i>
+                Ella Rises
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="/participants">Participants</a>
+                <a class="nav-link" href="/events">Events</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>
+                    <i class="fas fa-calendar-alt me-3"></i>
+                    Program Events & Workshops
+                </h2>
+                <p class="text-muted mb-0">Cultural programs and STEAM workshops empowering young women</p>
+            </div>
+            <a href="#" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>Add New Event
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-music text-primary me-2"></i>
+                                    Mariachi Band Practice
+                                </td>
+                                <td>Every Monday</td>
+                                <td>Neighborhood Art Center</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                    <small class="text-muted ms-1">Weekly</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-dance text-primary me-2"></i>
+                                    Ballet Folklorico Junior Class
+                                </td>
+                                <td>Sep 15, 2024</td>
+                                <td>Neighborhood Art Center</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                    <small class="text-muted ms-1">Monthly</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-atom text-primary me-2"></i>
+                                    STEAM Workshop: Robotics & Coding
+                                </td>
+                                <td>Oct 5-7, 2024</td>
+                                <td>Tech Innovation Lab</td>
+                                <td>
+                                    <span class="badge bg-info">Registering</span>
+                                    <small class="text-muted ms-1">3-Day</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fas fa-seedling text-primary me-2"></i>
+                                    Ella Rises Summit 2024
+                                </td>
+                                <td>Nov 16, 2024</td>
+                                <td>University Campus</td>
+                                <td>
+                                    <span class="badge bg-warning">Planning</span>
+                                    <small class="text-muted ms-1">Day Camp</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
