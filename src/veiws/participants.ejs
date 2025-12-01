@@ -1,119 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - Ella Rises</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/styles.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Ella Rises</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+  <link href="/styles.css" rel="stylesheet" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-seedling me-2"></i>
-                Ella Rises
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/login">Login</a>
-                <a class="nav-link" href="/participants">Participants</a>
-                <a class="nav-link" href="/events">Events</a>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-light ella-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/images/ella-logo.png" alt="Ella Rises Logo" class="ella-logo">
+        <span>Ella Rises</span>
+      </a>
+      <div class="navbar-nav ms-auto ella-nav-links">
+        <a class="nav-link" href="/events">Events</a>
+        <a class="nav-link" href="/donations">Donations</a>
+        <a class="nav-link" href="/login">Login</a>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2>
-                    <i class="fas fa-users me-3"></i>
-                    Program Participants
-                </h2>
-                <p class="text-muted mb-0">Young women participating in our mariachi, ballet folklorico, and STEAM programs</p>
-            </div>
-            <a href="#" class="btn btn-primary btn-lg">
-                <i class="fas fa-user-plus me-2"></i>Add New Participant
-            </a>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-user-circle text-primary me-2"></i>
-                                    Sofia Rodriguez
-                                </td>
-                                <td>sofia.r@example.com</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                    <small class="text-muted ms-1">Mariachi & STEAM</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-user-circle text-primary me-2"></i>
-                                    Maria Gonzalez
-                                </td>
-                                <td>maria.g@example.com</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                    <small class="text-muted ms-1">Ballet Folklorico</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-user-circle text-primary me-2"></i>
-                                    Isabella Martinez
-                                </td>
-                                <td>isabella.m@example.com</td>
-                                <td>
-                                    <span class="badge bg-warning">Pending</span>
-                                    <small class="text-muted ms-1">STEAM Workshop</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Participants</h1>
+      <p class="page-subtitle">
+        View and manage participants engaged in Ella Rises programs and milestones.
+      </p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="data-card">
+      <div class="search-row">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by name, school, or program">
+        <button class="btn btn-outline-primary btn-sm-pill" type="button">
+          Search
+        </button>
+        <!-- later: only show this button if user is a manager -->
+        <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
+          Add participant
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Program</th>
+              <th>School</th>
+              <th>Milestones</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (participants && participants.length > 0) { %>
+              <% participants.forEach(p => { %>
+                <tr>
+                  <td><%= p.name %></td>
+                  <td><%= p.program %></td>
+                  <td><%= p.school %></td>
+                  <td><%= p.milestonesSummary %></td>
+                  <td>
+                    <!-- later: wrap these in manager-only checks -->
+                    <button class="btn btn-outline-primary btn-sm-pill">
+                      View
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm-pill">
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="text-center text-muted">
+                  No participants to display yet.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      &copy; <%= new Date().getFullYear() %> Ella Rises · Participants
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+  </script>
 </body>
 </html>

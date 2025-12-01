@@ -1,79 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> - Ella Rises</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/styles.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Ella Rises</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+  <!-- Custom styles -->
+  <link href="/styles.css" rel="stylesheet" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-seedling me-2"></i>
-                Ella Rises
-            </a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/login">Login</a>
-                <a class="nav-link" href="/participants">Participants</a>
-                <a class="nav-link" href="/events">Events</a>
-            </div>
-        </div>
-    </nav>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light ella-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/images/ella-rises.png" alt="Ella Rises Logo" class="ella-logo">
+        <span>Ella Rises</span>
+      </a>
+      <div class="navbar-nav ms-auto ella-nav-links">
+        <a class="nav-link" href="/login">Login</a>
+        <a class="nav-link" href="/participants">Participants</a>
+        <a class="nav-link" href="/events">Events</a>
+        <a class="nav-link donate-btn" href="/donations">Donate</a>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container mt-4">
-        <div class="jumbotron">
-            <h1 class="display-4">
-                <i class="fas fa-seedling me-3"></i>
-                Welcome to Ella Rises
-            </h1>
-            <p class="lead">Inviting young women to pursue higher education and embrace their heritage through culturally rooted programs and educational experiences.</p>
-            <hr class="my-4">
-            <p>Explore our <span class="cultural-accent">mariachi</span>, <span class="cultural-accent">ballet folklorico</span>, and <span class="cultural-accent">STEAM</span> programs!</p>
-            <a class="btn btn-primary btn-lg" href="/participants" role="button">
-                <i class="fas fa-users me-2"></i>View Participants
-            </a>
-            <a class="btn btn-outline-primary btn-lg ms-3" href="/events" role="button">
-                <i class="fas fa-calendar-alt me-2"></i>View Events
-            </a>
-        </div>
+  <div class="container">
+    <!-- Hero -->
+    <div class="jumbotron mt-4">
+      <span class="hero-tagline">
+        Empowering the rising generation of women in mariachi, folklórico, and STEAM.
+      </span>
 
-        <div class="row mt-5">
-            <div class="col-md-4 mb-4">
-                <div class="card program-card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-music fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title cultural-accent">Mariachi Program</h5>
-                        <p class="card-text">Female mariachi band fostering musical excellence and cultural pride.</p>
-                        <a href="/events" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card program-card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-dance fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title cultural-accent">Ballet Folklorico</h5>
-                        <p class="card-text">Latin American folk dance fostering joy, confidence, and creative self-expression.</p>
-                        <a href="/events" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card program-card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-atom fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title cultural-accent">STEAM Workshops</h5>
-                        <p class="card-text">Science, Technology, Engineering, Art, and Math workshops for young women.</p>
-                        <a href="/events" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <h1>Welcome to Ella Rises</h1>
+
+      <p class="hero-subtitle">
+        Inviting young women to pursue higher education and embrace their heritage
+        through culturally rooted programs, creative workshops, and leadership opportunities
+        that build both technical competence and artistic confidence.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="/events">
+          View Events
+        </a>
+        <a class="btn btn-outline-primary" href="/participants">
+          View Participants
+        </a>
+        <a class="btn btn-outline-primary" href="/donations">
+          Donate &amp; Support Ella Rises
+        </a>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Programs -->
+    <h2 class="section-heading">Programs &amp; Experiences</h2>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="program-card mariachi">
+          <div class="program-card-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <h5>Mariachi</h5>
+          <p>
+            A vibrant mariachi program where young women develop musical skills,
+            confidence, and cultural pride on stage.
+          </p>
+          <a href="/events" class="btn btn-outline-primary btn-sm-pill mt-2">
+            Explore events
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="program-card folklorico">
+          <div class="program-card-icon">
+            <i class="fas fa-person-dress"></i>
+          </div>
+          <h5>Ballet Folklórico</h5>
+          <p>
+            Culturally rooted dance experiences that celebrate heritage
+            and build artistic confidence through performance.
+          </p>
+          <a href="/events" class="btn btn-outline-primary btn-sm-pill mt-2">
+            Explore events
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="program-card steam">
+          <div class="program-card-icon">
+            <i class="fas fa-atom"></i>
+          </div>
+          <h5>STEAM Pathways</h5>
+          <p>
+            Hands-on STEAM workshops and mentoring that support long-term goals
+            in science, technology, engineering, arts, and math.
+          </p>
+          <a href="/events" class="btn btn-outline-primary btn-sm-pill mt-2">
+            Explore events
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      &copy; <%= new Date().getFullYear() %> Ella Rises · Built for INTEX
+    </div>
+  </div>
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js">
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+  </script>
 </body>
 </html>
