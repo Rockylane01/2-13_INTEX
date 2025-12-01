@@ -1,0 +1,28 @@
+{
+  "name": "2-13_intex",
+  "version": "1.0.0",
+  "description": "INTEX web application",
+  "homepage": "https://github.com/Rockylane01/2-13_INTEX#readme",
+  "bugs": {
+    "url": "https://github.com/Rockylane01/2-13_INTEX/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rockylane01/2-13_INTEX.git"
+  },
+  "license": "ISC",
+  "author": "Rocky Lane",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.0",
+    "express-session": "^1.18.2",
+    "knex": "^3.1.0",
+    "pg": "^8.16.3"
+  }
+}
