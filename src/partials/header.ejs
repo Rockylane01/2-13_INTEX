@@ -15,7 +15,7 @@
         <a class="nav-link <%= active === 'donations' ? 'active-tab' : '' %>" href="/donations">Donations</a>
         <a class="nav-link <%= active === 'users' ? 'active-tab' : '' %>" href="/users">Users</a>
   
-        <% if (user) { %>
+        <% if (user ?? false) { %>
           <a class="nav-link <%= active === 'logout' ? 'active-tab' : '' %>" href="/logout">Logout</a>
         <% } else { %>
           <a class="nav-link <%= active === 'login' ? 'active-tab' : '' %>" href="/login">Login</a>

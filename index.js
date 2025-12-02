@@ -4,7 +4,7 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.RDS_PORT;
 
 // Set up EJS as the template engine
 app.set("view engine", "ejs");
@@ -30,12 +30,6 @@ app.use((req, res, next) => {
   // if (!req.session.user) {
   //   return res.redirect("/login");
   // }
-  req.session.user = {
-    id: 1,
-    username: "admin",
-    email: "admin@example.com",
-    role: "admin"
-  };
   // set user in locals for views
   res.locals.user = req.session.user;
   next();
