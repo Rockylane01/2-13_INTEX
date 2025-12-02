@@ -4,7 +4,7 @@ const path = require("path");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Set up EJS as the template engine
 app.set("view engine", "ejs");
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'ella-rises-development-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }));
@@ -43,11 +43,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index", { title: "Home" });
+  res.render("index", { title: "Home", active: "home" });
 });
 
 app.get("/login", (req, res) => {
-  res.render("login", { title: "Login" });
+  res.render("login", { title: "Login", active: "login" });
 });
 
 app.get("/logout", (req, res) => {
@@ -63,6 +63,7 @@ app.get("/participants", (req, res) => {
   // later you can pass real data from the database
   res.render("participants", {
     title: "Participants",
+    active: "participants",
     participants: [] // placeholder
   });
 });
@@ -70,6 +71,7 @@ app.get("/participants", (req, res) => {
 app.get("/events", (req, res) => {
   res.render("events", {
     title: "Events",
+    active: "events",
     events: [] // placeholder
   });
 });
@@ -78,6 +80,7 @@ app.get("/donations", (req, res) => {
   // later you can pass real data from the database
   res.render("donations", {
     title: "Donations",
+    active: "donations",
     donations: [], // placeholder
     totalAmount: 0 // placeholder
   });
@@ -87,6 +90,7 @@ app.get("/surveys", (req, res) => {
   // later you can pass real data from the database
   res.render("surveys", {
     title: "Surveys",
+    active: "surveys",
     surveys: [] // placeholder
   });
 });
@@ -95,6 +99,7 @@ app.get("/milestones", (req, res) => {
   // later you can pass real data from the database
   res.render("milestones", {
     title: "Milestones",
+    active: "milestones",
     milestones: [] // placeholder
   });
 });
@@ -103,6 +108,7 @@ app.get("/users", (req, res) => {
   // later you can pass real data from the database
   res.render("users", {
     title: "Users",
+    active: "users",
     users: [] // placeholder
   });
 });

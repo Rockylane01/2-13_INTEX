@@ -70,20 +70,35 @@
     letter-spacing: 0.05em;
   }
   
-  .ella-nav-links .nav-link {
-    font-weight: 500;
-    color: var(--ella-charcoal) !important;
-    margin-left: 1.2rem;
-    border-radius: 999px;
-    padding: 0.4rem 0.9rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    font-size: 0.95rem;
-  }
-  
-  .ella-nav-links .nav-link:hover {
-    background-color: var(--ella-blush);
-    color: var(--ella-charcoal) !important;
-  }
+/* Remove all underlines everywhere */
+a, a:hover, a:focus {
+  text-decoration: none !important;
+}
+
+/* Navbar links */
+.ella-nav-links .nav-link {
+  font-weight: 500;
+  color: var(--ella-charcoal) !important;
+  margin-left: 1.2rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;            
+  transition: background-color .2s ease, color .2s ease;
+  font-size: 0.98rem;
+}
+
+/* Hover effect: slightly darker cream */
+.ella-nav-links .nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.07);   
+  color: var(--ella-charcoal) !important;
+}
+
+/* Active Tab */
+.active-tab {
+  background-color: rgba(0, 0, 0, 0.12);   /* darker subtle cream */
+  color: var(--ella-charcoal) !important;
+  font-weight: 600;
+}
+
   
   .donate-btn {
     background-color: var(--ella-deep-pink);
