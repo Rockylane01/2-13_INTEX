@@ -23,52 +23,8 @@
     <div class="page-header">
       <h1 class="page-title">Users</h1>
       <p class="page-subtitle">
-        Manage system users and their access permissions for the Ella Rises platform.
+        Manage organization members and their participation in Ella Rises programs.
       </p>
-    </div>
-
-    <!-- Users Summary Cards -->
-    <div class="row mb-4">
-      <div class="col-md-3 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-users fa-3x text-primary mb-3"></i>
-            <h5 class="card-title">Total Users</h5>
-            <h3 class="text-primary"><%= users ? users.length : 0 %></h3>
-            <small class="text-muted">All registered users</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-crown fa-3x text-warning mb-3"></i>
-            <h5 class="card-title">Administrators</h5>
-            <h3 class="text-warning"><%= users ? users.filter(u => u.role === 'admin').length : 0 %></h3>
-            <small class="text-muted">Admin access</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-user-shield fa-3x text-info mb-3"></i>
-            <h5 class="card-title">Managers</h5>
-            <h3 class="text-info"><%= users ? users.filter(u => u.role === 'manager').length : 0 %></h3>
-            <small class="text-muted">Management access</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-user-check fa-3x text-success mb-3"></i>
-            <h5 class="card-title">Active Users</h5>
-            <h3 class="text-success"><%= users ? users.filter(u => u.isActive).length : 0 %></h3>
-            <small class="text-muted">Currently active</small>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="data-card">
@@ -82,19 +38,25 @@
         </button>
         <!-- later: only show this button if user is an admin -->
         <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
-          Add User
+          Add Member
         </button>
       </div>
+      
+      <p><%= users.length %></p>
 
       <div class="table-responsive">
         <table class="table align-middle mb-0">
           <thead>
             <tr>
-              <th>User</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th>Date of Birth</th>
               <th>Role</th>
-              <th>Status</th>
-              <th>Last Login</th>
-              <th>Created</th>
+              <th>Phone</th>
+              <th>Employer/School</th>
+              <th>Field of Interest</th>
+              <th>Total Donations</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -102,55 +64,38 @@
             <% if (users && users.length > 0) { %>
               <% users.forEach(user => { %>
                 <tr>
+                  <td><%= user.MemberFirstName || 'N/A' %></td>
+                  <td><%= user.MemberLastName || 'N/A' %></td>
+                  <td><%= user.MemberEmail || 'N/A' %></td>
+                  <td><%= user.MemberDOB ? new Date(user.MemberDOB).toLocaleDateString() : 'N/A' %></td>
                   <td>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar-circle me-3">
-                        <%= user.firstName ? user.firstName[0].toUpperCase() : '?' %>
-                        <%= user.lastName ? user.lastName[0].toUpperCase() : '' %>
-                      </div>
-                      <div>
-                        <strong><%= user.firstName %> <%= user.lastName %></strong>
-                        <br><small class="text-muted"><%= user.email %></small>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <% if (user.role === 'admin') { %>
-                      <span class="badge bg-danger">Administrator</span>
-                    <% } else if (user.role === 'manager') { %>
-                      <span class="badge bg-info">Manager</span>
+                    <% if (user.MemberRole) { %>
+                      <span class="badge bg-primary"><%= user.MemberRole %></span>
                     <% } else { %>
-                      <span class="badge bg-secondary">User</span>
+                      <span class="badge bg-secondary">No Role</span>
                     <% } %>
                   </td>
-                  <td>
-                    <% if (user.isActive) { %>
-                      <span class="badge bg-success">Active</span>
-                    <% } else { %>
-                      <span class="badge bg-secondary">Inactive</span>
-                    <% } %>
-                  </td>
-                  <td><%= user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never' %></td>
-                  <td><%= user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A' %></td>
+                  <td><%= user.MemberPhone || 'N/A' %></td>
+                  <td><%= user.MemberSchoolOrEmployer || 'N/A' %></td>
+                  <td><%= user.MemberFieldOfInterest || 'N/A' %></td>
+                  <td><%= user.TotalDonations ? '$' + parseFloat(user.TotalDonations).toFixed(2) : '$0.00' %></td>
                   <td>
                     <!-- later: wrap these in role-based checks -->
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      View
-                    </button>
+                    <a href="/user/<%= user.MemberID %>" class="btn btn-outline-primary btn-sm-pill">
+                      View Profile
+                    </a>
                     <button class="btn btn-outline-primary btn-sm-pill">
                       Edit
                     </button>
-                    <% if (user.role !== 'admin') { %>
-                      <button class="btn btn-outline-danger btn-sm-pill">
-                        Deactivate
-                      </button>
-                    <% } %>
+                    <button class="btn btn-outline-primary btn-sm-pill">
+                      View Donations
+                    </button>
                   </td>
                 </tr>
               <% }) %>
             <% } else { %>
               <tr>
-                <td colspan="6" class="text-center text-muted">
+                <td colspan="10" class="text-center text-muted">
                   No users to display yet.
                 </td>
               </tr>
@@ -161,7 +106,7 @@
     </div>
 
     <div class="footer">
-      &copy; <%= new Date().getFullYear() %> Ella Rises · Users
+      &copy; <%= new Date().getFullYear() %> Ella Rises · Members
     </div>
   </div>
 

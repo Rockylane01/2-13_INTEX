@@ -2,6 +2,17 @@ const express = require("express");
 const session = require("express-session");
 const path = require("path");
 require("dotenv").config();
+const knex = require("knex")({
+  client: "pg",
+  connection: {
+      host : process.env.RDS_HOSTNAME || "localhost",
+      user : process.env.RDS_USERNAME || "postgres",
+      password : process.env.RDS_PASSWORD || "rml65",
+      database : process.env.RDS_DB_NAME || "local_intex",
+      port : process.env.RDS_PORT || 5433,  // PostgreSQL 16 typically uses port 5432
+      // ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
+  }
+});
 
 const app = express();
 const PORT = process.env.RDS_PORT;
@@ -99,11 +110,50 @@ app.get("/milestones", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  // later you can pass real data from the database
-  res.render("users", {
-    title: "Users",
-    active: "users",
-    users: [] // placeholder
+  // Fetch members data from the database
+  // knex.select('*').from('members').then((users) => {
+    users = [{
+      MemberID: 1,
+      MemberFirstName: "John",
+      MemberLastName: "Doe",
+      MemberEmail: "john.doe@example.com",
+      MemberDOB: "1990-01-01",
+      MemberRole: "admin",
+    }]
+    res.render("users", {
+      title: "Users",
+      active: "users",
+      users: users
+    });
+  // })
+});
+
+app.get("/user/:id", (req, res) => {
+  const userId = req.params.id;
+
+  // Fetch user data and their completed milestones
+  knex.select
+  .then(([user, milestones]) => {
+    if (!user) {
+      return res.status(404).render("error", {
+        title: "User Not Found",
+        message: "The requested user could not be found."
+      });
+    }
+
+    res.render("user-profile", {
+      title: `${user.firstName} ${user.lastName} · Profile`,
+      active: "users",
+      user: user,
+      milestones: milestones || []
+    });
+  })
+  .catch((err) => {
+    console.error("Error fetching user profile:", err);
+    res.status(500).render("error", {
+      title: "Server Error",
+      message: "An error occurred while loading the user profile."
+    });
   });
 });
 
