@@ -83,6 +83,30 @@ app.get("/donations", (req, res) => {
   });
 });
 
+app.get("/surveys", (req, res) => {
+  // later you can pass real data from the database
+  res.render("surveys", {
+    title: "Surveys",
+    surveys: [] // placeholder
+  });
+});
+
+app.get("/milestones", (req, res) => {
+  // later you can pass real data from the database
+  res.render("milestones", {
+    title: "Milestones",
+    milestones: [] // placeholder
+  });
+});
+
+app.get("/users", (req, res) => {
+  // later you can pass real data from the database
+  res.render("users", {
+    title: "Users",
+    users: [] // placeholder
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
