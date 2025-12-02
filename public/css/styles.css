@@ -55,14 +55,15 @@
   }
   
   .ella-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--ella-charcoal);
-    margin-right: 0.6rem;
-    background-color: var(--ella-blush);
-  }
+    width: 72px;        /* was 44px — now visibly bigger */
+    height: 72px;
+    object-fit: contain; 
+    border-radius: 50%; /* optional — change to 0 if your PNG is already circular */
+    border: none;
+    margin-right: 0.75rem;
+    background-color: transparent; /* remove blush circle */
+}
+
   
   .navbar-brand span {
     font-family: "DM Serif Display", "Times New Roman", serif;
