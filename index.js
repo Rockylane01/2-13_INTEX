@@ -74,11 +74,16 @@ app.get("/participants", (req, res) => {
 });
 
 app.get("/events", (req, res) => {
-  res.render("events", {
-    title: "Events",
-    active: "events",
-    events: [] // placeholder
-  });
+  knex.select(['eventid', 'eventtemplates.eventname', 'eventdatetimestart', 'eventlocation'])
+    .from('events')
+    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
+    .then(events => {
+      res.render('events', {
+        title: "Events",
+        active: "events",
+        events: events
+      })
+    });
 });
 
 app.get("/donations", (req, res) => {
@@ -110,7 +115,9 @@ app.get("/milestones", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  knex.select().from('members').then(users => {
+  knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
+  .from('members')
+  .then(users => {
     res.render("users", {
       title: "Users",
       active: "users",
@@ -123,29 +130,29 @@ app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
 
   // Fetch user data and their completed milestones
-  knex.select()
-  .then(([user, milestones]) => {
-    if (!user) {
-      return res.status(404).render("error", {
-        title: "User Not Found",
-        message: "The requested user could not be found."
-      });
-    }
+  // knex.select()
+  // .then(([user, milestones]) => {
+  //   if (!user) {
+  //     return res.status(404).render("error", {
+  //       title: "User Not Found",
+  //       message: "The requested user could not be found."
+  //     });
+  //   }
 
-    res.render("user-profile", {
-      title: `${user.firstName} ${user.lastName} · Profile`,
-      active: "users",
-      user: user,
-      milestones: milestones || []
-    });
-  })
-  .catch((err) => {
-    console.error("Error fetching user profile:", err);
-    res.status(500).render("error", {
-      title: "Server Error",
-      message: "An error occurred while loading the user profile."
-    });
-  });
+  //   res.render("user-profile", {
+  //     title: `${user.firstName} ${user.lastName} · Profile`,
+  //     active: "users",
+  //     user: user,
+  //     milestones: milestones || []
+  //   });
+  // })
+  // .catch((err) => {
+  //   console.error("Error fetching user profile:", err);
+  //   res.status(500).render("error", {
+  //     title: "Server Error",
+  //     message: "An error occurred while loading the user profile."
+  //   });
+  // });
 });
 
 // Start server
