@@ -5,17 +5,17 @@ require("dotenv").config();
 const knex = require("knex")({
   client: "pg",
   connection: {
-      host : process.env.RDS_HOSTNAME || "localhost",
-      user : process.env.RDS_USERNAME || "postgres",
-      password : process.env.RDS_PASSWORD || "rml65",
-      database : process.env.RDS_DB_NAME || "local_intex",
-      port : process.env.RDS_PORT || 5433,  // PostgreSQL 16 typically uses port 5432
+      host : process.env.RDS_HOSTNAME,
+      user : process.env.RDS_USERNAME,
+      password : process.env.RDS_PASSWORD,
+      database : process.env.RDS_DB_NAME,
+      port : process.env.RDS_PORT,  // PostgreSQL 16 typically uses port 5432
       // ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
   }
 });
 
 const app = express();
-const PORT = process.env.RDS_PORT;
+const PORT = process.env.PORT;
 
 // Set up EJS as the template engine
 app.set("view engine", "ejs");
@@ -110,29 +110,20 @@ app.get("/milestones", (req, res) => {
 });
 
 app.get("/users", (req, res) => {
-  // Fetch members data from the database
-  // knex.select('*').from('members').then((users) => {
-    users = [{
-      MemberID: 1,
-      MemberFirstName: "John",
-      MemberLastName: "Doe",
-      MemberEmail: "john.doe@example.com",
-      MemberDOB: "1990-01-01",
-      MemberRole: "admin",
-    }]
+  knex.select().from('members').then(users => {
     res.render("users", {
       title: "Users",
       active: "users",
       users: users
     });
-  // })
+  });
 });
 
 app.get("/user/:id", (req, res) => {
   const userId = req.params.id;
 
   // Fetch user data and their completed milestones
-  knex.select
+  knex.select()
   .then(([user, milestones]) => {
     if (!user) {
       return res.status(404).render("error", {

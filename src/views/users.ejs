@@ -40,9 +40,10 @@
         <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
           Add Member
         </button>
-      </div>
+      </div>    
       
       <p><%= users.length %></p>
+      <p><%= users[0].MemberFirstName %></p>
 
       <div class="table-responsive">
         <table class="table align-middle mb-0">
@@ -51,46 +52,19 @@
               <th>First Name</th>
               <th>Last Name</th>
               <th>Email</th>
-              <th>Date of Birth</th>
-              <th>Role</th>
-              <th>Phone</th>
-              <th>Employer/School</th>
-              <th>Field of Interest</th>
-              <th>Total Donations</th>
-              <th>Actions</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <% if (users && users.length > 0) { %>
               <% users.forEach(user => { %>
                 <tr>
-                  <td><%= user.MemberFirstName || 'N/A' %></td>
-                  <td><%= user.MemberLastName || 'N/A' %></td>
-                  <td><%= user.MemberEmail || 'N/A' %></td>
-                  <td><%= user.MemberDOB ? new Date(user.MemberDOB).toLocaleDateString() : 'N/A' %></td>
-                  <td>
-                    <% if (user.MemberRole) { %>
-                      <span class="badge bg-primary"><%= user.MemberRole %></span>
-                    <% } else { %>
-                      <span class="badge bg-secondary">No Role</span>
-                    <% } %>
-                  </td>
-                  <td><%= user.MemberPhone || 'N/A' %></td>
-                  <td><%= user.MemberSchoolOrEmployer || 'N/A' %></td>
-                  <td><%= user.MemberFieldOfInterest || 'N/A' %></td>
-                  <td><%= user.TotalDonations ? '$' + parseFloat(user.TotalDonations).toFixed(2) : '$0.00' %></td>
-                  <td>
-                    <!-- later: wrap these in role-based checks -->
-                    <a href="/user/<%= user.MemberID %>" class="btn btn-outline-primary btn-sm-pill">
-                      View Profile
-                    </a>
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      Edit
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      View Donations
-                    </button>
-                  </td>
+                  <td><%= user.memberfirstname %></td>
+                  <td><%= user.memberlastname || 'N/A' %></td>
+                  <td><%= user.memberemail || 'N/A' %></td>
+                  <td><a href="">View</a></td>
+                  <td><a href="">Edit</a></td>
                 </tr>
               <% }) %>
             <% } else { %>
