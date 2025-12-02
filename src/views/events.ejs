@@ -37,91 +37,28 @@
                                 <th>Event Name</th>
                                 <th>Date</th>
                                 <th>Location</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
+                            <% if (events && events.length > 0) { %>
+                                <% events.forEach(event => { %>
+                                    <tr>
+                                        <td><%= event.eventname %></td>
+                                        <td><%= event.eventdatetimestart.toLocaleString() %></td>
+                                        <td><%= event.eventlocation %></td>
+                                        <td><a href="">View</a></td>
+                                        <td><a href="">Edit</a></td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
                             <tr>
-                                <td>
-                                    <i class="fas fa-music text-primary me-2"></i>
-                                    Mariachi Band Practice
-                                </td>
-                                <td>Every Monday</td>
-                                <td>Neighborhood Art Center</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                    <small class="text-muted ms-1">Weekly</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
+                                <td colspan="10" class="text-center text-muted">
+                                No events to display yet.
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-dance text-primary me-2"></i>
-                                    Ballet Folklorico Junior Class
-                                </td>
-                                <td>Sep 15, 2024</td>
-                                <td>Neighborhood Art Center</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                    <small class="text-muted ms-1">Monthly</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-atom text-primary me-2"></i>
-                                    STEAM Workshop: Robotics & Coding
-                                </td>
-                                <td>Oct 5-7, 2024</td>
-                                <td>Tech Innovation Lab</td>
-                                <td>
-                                    <span class="badge bg-info">Registering</span>
-                                    <small class="text-muted ms-1">3-Day</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <i class="fas fa-seedling text-primary me-2"></i>
-                                    Ella Rises Summit 2024
-                                </td>
-                                <td>Nov 16, 2024</td>
-                                <td>University Campus</td>
-                                <td>
-                                    <span class="badge bg-warning">Planning</span>
-                                    <small class="text-muted ms-1">Day Camp</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-eye"></i> View
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                </td>
-                            </tr>
+                            <% } %>
                         </tbody>
                     </table>
                 </div>
