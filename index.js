@@ -18,13 +18,14 @@ const app = express();
 const PORT = process.env.PORT;
 
 // Set up EJS as the template engine
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -48,8 +49,24 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("landing/index", { title: "Home", active: "home" });
+  if (req.session.user) {
+    // Logged-in version of landing page
+    return res.render("landing/index-loggedin", {
+      title: "Dashboard",
+      user: req.session.user
+    });
+  }
+
+  // Visitor version
+  res.render("landing/index", {
+    title: "Home",
+    user: null
+  });
 });
+
+
+
+
 
 app.get("/login", (req, res) => {
   res.render("login/login", { title: "Login", active: "login" });
