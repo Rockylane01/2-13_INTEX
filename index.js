@@ -86,22 +86,17 @@ app.post("/login", async (req, res) => {
     email = email.trim();
     password = password.trim();
 
-    console.log("Login attempt for:", email);
-
     const user = await knex("credentials")
       .select("credpass")
       .where("credemail", email)
       .first();
 
     if (!user) {
-      console.log("No user found for email:", email);
       return res.status(400).send("Invalid credentials");
     }
 
     const hashedPassword = user.credpass.trim();
     const valid = await bcrypt.compare(password, hashedPassword);
-
-    console.log("Password match result:", valid);
 
     if (!valid) {
       console.log("Password mismatch for:", email);

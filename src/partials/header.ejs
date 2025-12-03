@@ -30,15 +30,20 @@
       </div>
       <% } %>
   
-      <% if (user) { %>
+      
       <div class="nav-links">
-          <a href="/participants">Participants</a>
-          <a href="/events">Events</a>
-          <a href="/surveys">Surveys</a>
-          <a href="/milestones">Milestones</a>
-          <a href="/donations">Donations</a>
-          <a href="/donate" class="donate-btn">donate</a>
+          <a href="/donations/donations">Donations</a>
+          <a href="/donations/donationform" class="donate-btn">donate</a>
+          <a href="/milestones/milestones">Milestones</a>
+          
+          <% if (user) { %>
+          <a href="/events/events">Events</a>
+          <% } %>
+          
+          <!-- to be made admin-only -->
+          <a href="/admin/admin">Admin Portal</a>
+
       </div>
-      <% } %>
+ 
   </nav>
   
