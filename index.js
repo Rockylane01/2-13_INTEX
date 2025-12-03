@@ -73,39 +73,55 @@ app.get("/login", (req, res) => {
   res.render("login/login", { title: "Login", active: "login" });
 });
 
-// Filler for the login POST route
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
   try {
-    // 1. Look up user using knex
-    const result = await knex("credentials")
+    let { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Please provide email and password");
+    }
+
+    email = email.trim();
+    password = password.trim();
+
+    console.log("Login attempt for:", email);
+
+    const user = await knex("credentials")
       .select("credpass")
       .where("credemail", email)
       .first();
 
-    if (!result) {
+    if (!user) {
+      console.log("No user found for email:", email);
       return res.status(400).send("Invalid credentials");
     }
 
-    const hashedPassword = result.credpass;
+    const hashedPassword = user.credpass.trim();
 
-    // 2. Compare entered password with stored hash
+    // DEBUG: show sanitized comparison info
+    console.log("DEBUG: entered password length:", password.length);
+    console.log("DEBUG: DB hash length:", hashedPassword.length);
+
     const valid = await bcrypt.compare(password, hashedPassword);
 
+    console.log("Password match result:", valid);
+
     if (!valid) {
+      console.log("Password mismatch for:", email);
       return res.status(400).send("Invalid credentials");
     }
 
-    // 3. Store session info
     req.session.user = { email };
+    console.log("Login successful for:", email);
 
     res.redirect("/");
   } catch (err) {
-    console.error(err);
+    console.error("Login error:", err);
     res.status(500).send("Server error");
   }
 });
+
+
 
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
