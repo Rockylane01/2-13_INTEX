@@ -10,7 +10,7 @@ const knex = require("knex")({
       password : process.env.RDS_PASSWORD,
       database : process.env.RDS_DB_NAME,
       port : process.env.RDS_PORT,  // PostgreSQL 16 typically uses port 5432
-      // ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
+      ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
   }
 });
 
@@ -18,13 +18,14 @@ const app = express();
 const PORT = process.env.PORT;
 
 // Set up EJS as the template engine
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src", "views"));
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -48,11 +49,36 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index", { title: "Home", active: "home" });
+  if (req.session.user) {
+    // Logged-in version of landing page
+    return res.render("landing/index-loggedin", {
+      title: "Dashboard",
+      user: req.session.user
+    });
+  }
+
+  // Visitor version
+  res.render("landing/index", {
+    title: "Home",
+    user: null
+  });
 });
 
+
+
+
+
 app.get("/login", (req, res) => {
-  res.render("login", { title: "Login", active: "login" });
+  res.render("login/login", { title: "Login", active: "login" });
+});
+
+// Filler for the login POST route
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  // Here you would normally validate the user's credentials
+  // For demonstration, we'll assume any login is valid
+  req.session.user = { email: email }; // Store user info in session
+  res.redirect("/");
 });
 
 app.get("/logout", (req, res) => {
@@ -64,21 +90,12 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get("/participants", (req, res) => {
-  // later you can pass real data from the database
-  res.render("participants", {
-    title: "Participants",
-    active: "participants",
-    participants: [] // placeholder
-  });
-});
-
 app.get("/events", (req, res) => {
   knex.select(['eventid', 'eventtemplates.eventname', 'eventdatetimestart', 'eventlocation'])
     .from('events')
     .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
     .then(events => {
-      res.render('events', {
+      res.render('events/events', {
         title: "Events",
         active: "events",
         events: events
@@ -87,38 +104,61 @@ app.get("/events", (req, res) => {
 });
 
 app.get("/donations", (req, res) => {
-  // later you can pass real data from the database
-  res.render("donations", {
-    title: "Donations",
-    active: "donations",
-    donations: [], // placeholder
-    totalAmount: 0 // placeholder
-  });
+  knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
+    .then(result => {
+      let totalAmount = result[0].total || 0;
+
+      knex.select('memberfirstname', 'donationdate', 'donationamount')
+      .from('donations')
+      .join('members', 'donations.memberid', '=', 'members.memberid')
+      .then(donations => {
+        res.render('donations/donations', {
+          title: "Donations",
+          active: "donations",
+          donations: donations,
+          totalAmount: totalAmount
+        });
+        
+      });
+    })
+
+  
 });
 
 app.get("/surveys", (req, res) => {
-  // later you can pass real data from the database
-  res.render("surveys", {
-    title: "Surveys",
-    active: "surveys",
-    surveys: [] // placeholder
-  });
+  knex.select('participantevent.peid', 'members.memberfirstname', 'members.memberlastname', 'eventtemplates.eventname', 'surveys.surveyoverallscore')
+    .from('participantevent')
+    .join('members', 'participantevent.memberid', '=', 'members.memberid')
+    .join('events', 'participantevent.eventid', '=', 'events.eventid')
+    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
+    .join('surveys', 'participantevent.peid', '=', 'surveys.peid')
+    .then(surveys => {
+      res.render("surveys/surveys", {
+        title: "Surveys",
+        active: "surveys",
+        surveys: surveys
+      });
+    });
 });
 
 app.get("/milestones", (req, res) => {
-  // later you can pass real data from the database
-  res.render("milestones", {
-    title: "Milestones",
-    active: "milestones",
-    milestones: [] // placeholder
-  });
+  knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])
+    .from('milestones')
+    .join('members', 'milestones.memberid', '=', 'members.memberid')
+    .then(milestones => {
+      res.render("milestones/milestones", {
+        title: "Milestones",
+        active: "milestones",
+        milestones: milestones
+      });
+    });
 });
 
 app.get("/users", (req, res) => {
   knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
   .from('members')
   .then(users => {
-    res.render("users", {
+    res.render("users/users", {
       title: "Users",
       active: "users",
       users: users
@@ -126,33 +166,32 @@ app.get("/users", (req, res) => {
   });
 });
 
-app.get("/user/:id", (req, res) => {
-  const userId = req.params.id;
+app.get("/user_profile/:id", (req, res) => {
+  const memberId = req.params.id;
 
   // Fetch user data and their completed milestones
-  // knex.select()
-  // .then(([user, milestones]) => {
-  //   if (!user) {
-  //     return res.status(404).render("error", {
-  //       title: "User Not Found",
-  //       message: "The requested user could not be found."
-  //     });
-  //   }
+  knex.select('*')
+    .from('members')
+    .where('members.memberid', memberId)
+    .first()
+    .then(user => {
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
 
-  //   res.render("user-profile", {
-  //     title: `${user.firstName} ${user.lastName} · Profile`,
-  //     active: "users",
-  //     user: user,
-  //     milestones: milestones || []
-  //   });
-  // })
-  // .catch((err) => {
-  //   console.error("Error fetching user profile:", err);
-  //   res.status(500).render("error", {
-  //     title: "Server Error",
-  //     message: "An error occurred while loading the user profile."
-  //   });
-  // });
+      // Fetch milestones for this user
+      knex.select(['milestonetitle', 'milestonedate'])
+        .from('milestones')
+        .where('milestones.memberid', memberId)
+        .then(milestones => {
+          res.render("users/user_profile", {
+            title: "User Profile",
+            active: "users",
+            user: user,
+            milestones: milestones
+          });
+        });
+    });
 });
 
 // Start server

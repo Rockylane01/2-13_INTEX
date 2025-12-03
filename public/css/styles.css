@@ -23,7 +23,7 @@
     margin: 0;
     font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont,
       "Segoe UI", sans-serif;
-    background-color: var(--ella-cream);
+    background-color: var(--ella-white);
     color: var(--ella-charcoal);
     line-height: 1.6;
   }
@@ -46,74 +46,152 @@
     margin-top: 1.5rem;
   }
   
-  /* ====== Navbar ====== */
-  
-  .ella-nav {
-    background-color: var(--ella-cream);
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(58, 63, 59, 0.08);
-  }
-  
-  .ella-logo {
-    width: 72px;        /* was 44px — now visibly bigger */
-    height: 72px;
-    object-fit: contain; 
-    border-radius: 50%; /* optional — change to 0 if your PNG is already circular */
-    border: none;
-    margin-right: 0.75rem;
-    background-color: transparent; /* remove blush circle */
+/* ===== NAVBAR ===== */
+
+/* Top white bar */
+.top-auth-bar {
+  width: 100%;
+  background: white;
+  padding: 10px 40px;
+  display: flex;
+  justify-content: flex-end;
+  font-family: Montserrat, sans-serif;
 }
 
-  
-  .navbar-brand span {
-    font-family: "DM Serif Display", "Times New Roman", serif;
-    font-size: 1.5rem;
-    letter-spacing: 0.05em;
-  }
-  
-/* Remove all underlines everywhere */
-a, a:hover, a:focus {
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+}
+
+.auth-links a {
+  color: var(--ella-charcoal);
+  text-decoration: none;
+  margin-left: 8px;
+  font-size: 0.95rem;
+  transition: all 0.35s ease;
+}
+
+.auth-links a:hover {
+  color: #3a3f3bc1;
+}
+
+/* Pink nav bar */
+.pink-nav {
+  width: 100%;
+  height: 111px;
+  background: #FFD8D1;
+  padding: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo img {
+  height: 102px;
+}
+
+.logo-text {
+  font-family: "DM Serif Display", serif;
+  font-size: 2rem;
+}
+
+/* Hero layout */
+.landing-hero {
+  padding: 50px 80px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.hero-image {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  margin: 20px 0 35px;
+}
+
+.landing-donate-btn {
+  background-color: #9AB59D; 
+  color: var(--ella-charcoal);
+  font-size: 1.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 1rem 3rem;
+  border-radius: 40px;
+  transition: background-color 0.4s ease;
+}
+
+
+/* DONATE BUTTON (universal style) */
+.donate-btn {
+  background-color: #9AB59D; 
+  color: var(--ella-charcoal) !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  padding: 0.65rem 2rem;
+  border-radius: 40px;
+  transition: all 0.4s ease;
+}
+
+.donate-btn:hover {
+  background-color: #829c85;
   text-decoration: none !important;
 }
 
-/* Navbar links */
-.ella-nav-links .nav-link {
-  font-weight: 500;
-  color: var(--ella-charcoal) !important;
-  margin-left: 1.2rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 6px;            
-  transition: background-color .2s ease, color .2s ease;
-  font-size: 0.98rem;
+/* ===== HERO SECTION ===== */
+.landing-hero {
+  margin-top: 2rem;
 }
 
-/* Hover effect: slightly darker cream */
-.ella-nav-links .nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.07);   
-  color: var(--ella-charcoal) !important;
+.hero-grid {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
-/* Active Tab */
-.active-tab {
-  background-color: rgba(0, 0, 0, 0.12);   /* darker subtle cream */
-  color: var(--ella-charcoal) !important;
-  font-weight: 600;
+.hero-image {
+  width: 50%;
+  border-radius: 10px;
 }
 
-  
-  .donate-btn {
-    background-color: var(--ella-deep-pink);
-    color: var(--ella-cream) !important;
-    border-radius: 999px;
-    padding-inline: 1rem;
-    font-weight: 600;
-  }
-  
-  .donate-btn:hover {
-    background-color: #b02a52;
-    color: var(--ella-white) !important;
-  }
-  
+.hero-text {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.hero-title {
+  font-family: Montserrat;
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero-subtext {
+  font-size: 2rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+
+
   /* ====== Buttons ====== */
   
   .btn-primary {
@@ -156,6 +234,73 @@ a, a:hover, a:focus {
     padding: 0.45rem 1.1rem;
     font-size: 0.85rem;
   }
+
+  /* ===== Footer ===== */
+  .ella-rises-banner {
+    background-color: #000;
+    width: 100%;
+    height: 130px; 
+    text-align: center;
+  }
+
+  .ella-rises-banner > img {
+    height: 70px;
+    width: auto;
+    margin-top: 1.86rem;
+  }
+
+/* ===== Footer Section ===== */
+.index-footer {
+  background: #fff;
+  padding: 2rem 0 1.3rem;
+  text-align: center;
+}
+
+/* Social icons container */
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem; /* space between icons */
+  margin-bottom: 1rem;
+}
+
+/* Social icons */
+
+.instagram-icon {
+  font-size: 30px;          /* bigger, polished */
+  background-color: none;
+  color: #fff;           /* charcoal */
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.instagram-icon-container {
+  height: 42px;
+  width: 42px;
+  background-color: #000;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.facebook-icon {
+  font-size: 40px;          
+  color: #000;          
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+
+/* Copyright text */
+.footer-copy {
+  font-size: 0.9rem;
+  color: #3a3a3a;
+  margin-top: 0.5rem;
+}
+
+
   
   /* ====== Hero / Jumbotron ====== */
   

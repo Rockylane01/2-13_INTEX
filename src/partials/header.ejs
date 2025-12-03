@@ -1,25 +1,42 @@
-<nav class="navbar navbar-expand-lg navbar-light ella-nav">
-    <div class="container">
-  
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <img src="/images/ella-rises-logo.png" alt="Ella Rises Logo" class="ella-logo">
-        <span>Ella Rises</span>
-      </a>
-  
-      <div class="navbar-nav ms-auto ella-nav-links">
-        <a class="nav-link <%= active === 'events' ? 'active-tab' : '' %>" href="/events">Events</a>
-        <a class="nav-link <%= active === 'surveys' ? 'active-tab' : '' %>" href="/surveys">Surveys</a>
-        <a class="nav-link <%= active === 'milestones' ? 'active-tab' : '' %>" href="/milestones">Milestones</a>
-        <a class="nav-link <%= active === 'donations' ? 'active-tab' : '' %>" href="/donations">Donations</a>
-        <a class="nav-link <%= active === 'users' ? 'active-tab' : '' %>" href="/users">Users</a>
-  
-        <% if (user ?? false) { %>
-          <a class="nav-link <%= active === 'logout' ? 'active-tab' : '' %>" href="/logout">Logout</a>
-        <% } else { %>
-          <a class="nav-link <%= active === 'login' ? 'active-tab' : '' %>" href="/login">Login</a>
-        <% } %>
-  
-      </div>
+<!-- Top white bar (only for visitors) -->
+<% if (!user) { %>
+  <div class="top-auth-bar">
+    <div class="auth-links">
+      <a href="/register">Register</a> 
+      <a href="#">|</a>
+      <a href="/login">Log in</a>
     </div>
+  </div>
+  <% } else { %>
+  <div class="top-auth-bar">
+    <div class="auth-links">
+      <a href="/profile">Profile</a> |
+      <a href="/logout">Log out</a>
+    </div>
+  </div>
+  <% } %>
+  
+  <!-- Pink navigation bar -->
+  <nav class="pink-nav">
+    <% if (!user) { %>
+      <div class="nav-logo">
+          <img src="/images/ella-rises-logo-2.png" alt="Ella Rises Logo">
+      </div>
+    <% } else { %>
+      <div>
+        <img src="/images/ella-rises-logo.png" alt="Ella Rises Logo">
+      </div>
+      <% } %>
+  
+      <% if (user) { %>
+      <div class="nav-links">
+          <a href="/participants">Participants</a>
+          <a href="/events">Events</a>
+          <a href="/surveys">Surveys</a>
+          <a href="/milestones">Milestones</a>
+          <a href="/donations">Donations</a>
+          <a href="/donate" class="donate-btn">donate</a>
+      </div>
+      <% } %>
   </nav>
   

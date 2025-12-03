@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Ella Rises</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+  <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+  <%- include('../../partials/header') %>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Users</h1>
+      <p class="page-subtitle">
+        Manage organization members and their participation in Ella Rises programs.
+      </p>
+    </div>
+
+    <div class="data-card">
+      <div class="search-row">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by name, email, or role">
+        <button class="btn btn-outline-primary btn-sm-pill" type="button">
+          Search
+        </button>
+        <!-- later: only show this button if user is an admin -->
+        <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
+          Add Member
+        </button>
+      </div>    
+      
+      <p><%= users.length %></p>
+      <p><%= users[0].MemberFirstName %></p>
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Email</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users && users.length > 0) { %>
+              <% users.forEach(user => { %>
+                <tr>
+                  <td><%= user.memberfirstname %></td>
+                  <td><%= user.memberlastname || 'N/A' %></td>
+                  <td><%= user.memberemail || 'N/A' %></td>
+                  <td>
+                    <form action="/user_profile/<%= user.memberid %>" method="GET">
+                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">View Profile</button>
+                    </form>
+                  </td>
+                  <td>
+                    <form action="/editUser/<%= user.memberid %>" method="GET">
+                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">Edit</button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="10" class="text-center text-muted">
+                  No users to display yet.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      &copy; <%= new Date().getFullYear() %> Ella Rises · Members
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+</body>
+</html>
