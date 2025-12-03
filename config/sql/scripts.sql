@@ -91,6 +91,11 @@ CREATE TABLE AttendanceFlagLookup (
     RegistrationAttendedFlag BOOLEAN NOT NULL
 );
 
+create table credentials (
+	credemail varchar(255) primary key,
+	credpass text not null
+);
+
 
 -- import data from tables. Two of these tables need quote characters.
 
@@ -136,6 +141,10 @@ DELIMITER ','
 CSV HEADER;
 COPY AttendanceFlagLookup(RegistrationStatus, RegistrationAttendedFlag)
 FROM 'C:/Program Files/PostgreSQL/import/New/AttendanceFlagLookup.csv'
+DELIMITER ','
+CSV HEADER;
+COPY credentials(credemail, credpass)
+FROM 'C:/Program Files/PostgreSQL/import/New/output.csv'
 DELIMITER ','
 CSV HEADER;
 
