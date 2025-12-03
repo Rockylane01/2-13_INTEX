@@ -1,0 +1,26 @@
+<!-- This page is tied to a specific logged-in user and a specific event. -->
+<!-- A user should not be able to access this page unless their ID is tied to a record in the Registration table that matches this event. -->
+<!-- A user should also be denied access if the event has not ended (compare current datetime to event end datetime). -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- PASS IN EVENT DETAILS TO DISPLAY AS HEADER -->
+    <form>
+        <!-- PASS IN FIRST NAME, LAST NAME, MEMBERID, EVENTID AUTOMATICALLY BASED ON LOGGED-IN USER. DO THIS IN HIDDEN FIELDS.-->
+        <!-- SurveySatisfactionScore input (integer from 1 to 5) -->
+        <!-- SurveyUsefulnessScore input (int 1 to 5) -->
+        <!-- SurveyInstructorScore input (int 1 to 5) -->
+        <!-- SurveyRecommendationScore input (int 1 to 5) -->
+        <!-- HIDDEN SurveyOverallScore, calculated by averaging the above 4 inputs. -->
+        <!-- SurveyComments input varchar(1000) -->
+        <!-- HIDDEN SurveySubmissionDate, a timestamp of when they click submit. -->
+    </form>
+</body>
+</html>

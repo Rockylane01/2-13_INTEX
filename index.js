@@ -10,7 +10,7 @@ const knex = require("knex")({
       user : process.env.RDS_USERNAME,
       password : process.env.RDS_PASSWORD,
       database : process.env.RDS_DB_NAME,
-      port : process.env.RDS_PORT,  // PostgreSQL 16 typically uses port 5432
+      port : process.env.RDS_PORT,
       ssl: process.env.DB_SSL ? {rejectUnauthorized: false} : false 
   }
 });
@@ -40,9 +40,9 @@ app.use((req, res, next) => {
     return next();
   }
   // check if user is authenticated
-  // if (!req.session.user) {
-  //   return res.redirect("/login");
-  // }
+  if (!req.session.user) {
+     return res.redirect("/login");
+  }
   // set user in locals for views
   res.locals.user = req.session.user;
   next();
@@ -73,6 +73,8 @@ app.get("/login", (req, res) => {
   res.render("login/login", { title: "Login", active: "login", user: req.session.user });
 });
 
+
+// Need to store user data as session variables.
 app.post("/login", async (req, res) => {
   try {
     let { email, password } = req.body;
@@ -97,11 +99,6 @@ app.post("/login", async (req, res) => {
     }
 
     const hashedPassword = user.credpass.trim();
-
-    // DEBUG: show sanitized comparison info
-    console.log("DEBUG: entered password length:", password.length);
-    console.log("DEBUG: DB hash length:", hashedPassword.length);
-
     const valid = await bcrypt.compare(password, hashedPassword);
 
     console.log("Password match result:", valid);
