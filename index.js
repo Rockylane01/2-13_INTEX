@@ -48,11 +48,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index", { title: "Home", active: "home" });
+  res.render("landing/index", { title: "Home", active: "home" });
 });
 
 app.get("/login", (req, res) => {
-  res.render("login", { title: "Login", active: "login" });
+  res.render("login/login", { title: "Login", active: "login" });
 });
 
 app.get("/logout", (req, res) => {
