@@ -17,7 +17,7 @@
   <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../../partials/header') %>
 
   <div class="container">
     <div class="page-header">
@@ -34,7 +34,7 @@
           <div class="card-body text-center">
             <i class="fas fa-dollar-sign fa-3x text-primary mb-3"></i>
             <h5 class="card-title">Total Donations</h5>
-            <h3 class="text-primary">$<%= totalAmount ? totalAmount.toLocaleString() : '0' %></h3>
+            <h3 class="text-primary">$<%= totalAmount //? totalAmount.toLocaleString() : '0' %></h3>
             <small class="text-muted">All time contributions</small>
           </div>
         </div>
@@ -42,20 +42,10 @@
       <div class="col-md-4 mb-3">
         <div class="card program-card h-100">
           <div class="card-body text-center">
-            <i class="fas fa-heart fa-3x text-danger mb-3"></i>
-            <h5 class="card-title">Monthly Goal</h5>
-            <h3 class="text-success">$5,000</h3>
-            <small class="text-muted">Target for this month</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
             <i class="fas fa-users fa-3x text-info mb-3"></i>
-            <h5 class="card-title">Donors</h5>
+            <h5 class="card-title">Donations</h5>
             <h3 class="text-info"><%= donations ? donations.length : 0 %></h3>
-            <small class="text-muted">Total contributors</small>
+            <small class="text-muted">Total donations</small>
           </div>
         </div>
       </div>
@@ -82,10 +72,9 @@
             <tr>
               <th>Donor</th>
               <th>Amount</th>
-              <th>Type</th>
               <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -93,19 +82,10 @@
               <% donations.forEach(donation => { %>
                 <tr>
                   <td>
-                    <%= donation.donor_name %>
-                    <% if (donation.is_anonymous) { %>
-                      <span class="badge bg-secondary ms-1">Anonymous</span>
-                    <% } %>
+                    <%= donation.memberfirstname %>
                   </td>
-                  <td class="fw-bold">$<%= donation.amount ? donation.amount.toLocaleString() : '0' %></td>
-                  <td>
-                    <span class="badge bg-primary"><%= donation.donation_type || 'General' %></span>
-                  </td>
-                  <td><%= donation.donation_date ? new Date(donation.donation_date).toLocaleDateString() : 'N/A' %></td>
-                  <td>
-                    <span class="badge bg-success">Received</span>
-                  </td>
+                  <td class="fw-bold">$<%= donation.donationamount ? donation.donationamount.toLocaleString() : '0' %></td>
+                  <td><%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %></td>
                   <td>
                     <!-- later: wrap these in manager-only checks -->
                     <button class="btn btn-outline-primary btn-sm-pill">

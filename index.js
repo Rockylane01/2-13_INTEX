@@ -78,7 +78,7 @@ app.get("/events", (req, res) => {
     .from('events')
     .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
     .then(events => {
-      res.render('events', {
+      res.render('events/events', {
         title: "Events",
         active: "events",
         events: events
@@ -87,13 +87,25 @@ app.get("/events", (req, res) => {
 });
 
 app.get("/donations", (req, res) => {
-  // later you can pass real data from the database
-  res.render("donations", {
-    title: "Donations",
-    active: "donations",
-    donations: [], // placeholder
-    totalAmount: 0 // placeholder
-  });
+  knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
+    .then(result => {
+      let totalAmount = result[0].total || 0;
+
+      knex.select('memberfirstname', 'donationdate', 'donationamount')
+      .from('donations')
+      .join('members', 'donations.memberid', '=', 'members.memberid')
+      .then(donations => {
+        res.render('donations/donations', {
+          title: "Donations",
+          active: "donations",
+          donations: donations,
+          totalAmount: totalAmount
+        });
+        
+      });
+    })
+
+  
 });
 
 app.get("/surveys", (req, res) => {
@@ -118,7 +130,7 @@ app.get("/users", (req, res) => {
   knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
   .from('members')
   .then(users => {
-    res.render("users", {
+    res.render("users/users", {
       title: "Users",
       active: "users",
       users: users
