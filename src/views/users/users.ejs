@@ -63,8 +63,16 @@
                   <td><%= user.memberfirstname %></td>
                   <td><%= user.memberlastname || 'N/A' %></td>
                   <td><%= user.memberemail || 'N/A' %></td>
-                  <td><a href="">View</a></td>
-                  <td><a href="">Edit</a></td>
+                  <td>
+                    <form action="/user_profile/<%= user.memberid %>" method="GET">
+                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">View Profile</button>
+                    </form>
+                  </td>
+                  <td>
+                    <form action="/editUser/<%= user.memberid %>" method="GET">
+                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">Edit</button>
+                    </form>
+                  </td>
                 </tr>
               <% }) %>
             <% } else { %>

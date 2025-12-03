@@ -72,21 +72,21 @@ app.get("/login", (req, res) => {
   res.render("login/login", { title: "Login", active: "login" });
 });
 
+// Filler for the login POST route
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  // Here you would normally validate the user's credentials
+  // For demonstration, we'll assume any login is valid
+  req.session.user = { email: email }; // Store user info in session
+  res.redirect("/");
+});
+
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).send("Error logging out");
     }
     res.redirect("/login");
-  });
-});
-
-app.get("/participants", (req, res) => {
-  // later you can pass real data from the database
-  res.render("participants", {
-    title: "Participants",
-    active: "participants",
-    participants: [] // placeholder
   });
 });
 
@@ -166,33 +166,32 @@ app.get("/users", (req, res) => {
   });
 });
 
-app.get("/user/:id", (req, res) => {
-  const userId = req.params.id;
+app.get("/user_profile/:id", (req, res) => {
+  const memberId = req.params.id;
 
   // Fetch user data and their completed milestones
-  // knex.select()
-  // .then(([user, milestones]) => {
-  //   if (!user) {
-  //     return res.status(404).render("error", {
-  //       title: "User Not Found",
-  //       message: "The requested user could not be found."
-  //     });
-  //   }
+  knex.select('*')
+    .from('members')
+    .where('members.memberid', memberId)
+    .first()
+    .then(user => {
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
 
-  //   res.render("user-profile", {
-  //     title: `${user.firstName} ${user.lastName} · Profile`,
-  //     active: "users",
-  //     user: user,
-  //     milestones: milestones || []
-  //   });
-  // })
-  // .catch((err) => {
-  //   console.error("Error fetching user profile:", err);
-  //   res.status(500).render("error", {
-  //     title: "Server Error",
-  //     message: "An error occurred while loading the user profile."
-  //   });
-  // });
+      // Fetch milestones for this user
+      knex.select(['milestonetitle', 'milestonedate'])
+        .from('milestones')
+        .where('milestones.memberid', memberId)
+        .then(milestones => {
+          res.render("users/user_profile", {
+            title: "User Profile",
+            active: "users",
+            user: user,
+            milestones: milestones
+          });
+        });
+    });
 });
 
 // Start server
