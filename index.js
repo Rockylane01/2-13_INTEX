@@ -109,21 +109,32 @@ app.get("/donations", (req, res) => {
 });
 
 app.get("/surveys", (req, res) => {
-  // later you can pass real data from the database
-  res.render("surveys", {
-    title: "Surveys",
-    active: "surveys",
-    surveys: [] // placeholder
-  });
+  knex.select('participantevent.peid', 'members.memberfirstname', 'members.memberlastname', 'eventtemplates.eventname', 'surveys.surveyoverallscore')
+    .from('participantevent')
+    .join('members', 'participantevent.memberid', '=', 'members.memberid')
+    .join('events', 'participantevent.eventid', '=', 'events.eventid')
+    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
+    .join('surveys', 'participantevent.peid', '=', 'surveys.peid')
+    .then(surveys => {
+      res.render("surveys/surveys", {
+        title: "Surveys",
+        active: "surveys",
+        surveys: surveys
+      });
+    });
 });
 
 app.get("/milestones", (req, res) => {
-  // later you can pass real data from the database
-  res.render("milestones", {
-    title: "Milestones",
-    active: "milestones",
-    milestones: [] // placeholder
-  });
+  knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])
+    .from('milestones')
+    .join('members', 'milestones.memberid', '=', 'members.memberid')
+    .then(milestones => {
+      res.render("milestones/milestones", {
+        title: "Milestones",
+        active: "milestones",
+        milestones: milestones
+      });
+    });
 });
 
 app.get("/users", (req, res) => {

@@ -17,7 +17,7 @@
   <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../../partials/header') %>
 
   <div class="container">
     <div class="page-header">
@@ -29,33 +29,21 @@
 
     <!-- Milestones Summary Cards -->
     <div class="row mb-4">
-      <div class="col-md-4 mb-3">
+      <div class="col-md-6 mb-3">
         <div class="card program-card h-100">
           <div class="card-body text-center">
-            <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
             <h5 class="card-title">Total Milestones</h5>
             <h3 class="text-warning"><%= milestones ? milestones.length : 0 %></h3>
             <small class="text-muted">All achievements</small>
           </div>
         </div>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-6 mb-3">
         <div class="card program-card h-100">
           <div class="card-body text-center">
-            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
-            <h5 class="card-title">Completed</h5>
-            <h3 class="text-success"><%= milestones ? milestones.filter(m => m.isCompleted).length : 0 %></h3>
-            <small class="text-muted">Achieved goals</small>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="card program-card h-100">
-          <div class="card-body text-center">
-            <i class="fas fa-clock fa-3x text-info mb-3"></i>
-            <h5 class="card-title">In Progress</h5>
-            <h3 class="text-info"><%= milestones ? milestones.filter(m => !m.isCompleted).length : 0 %></h3>
-            <small class="text-muted">Active goals</small>
+            <h5 class="card-title">...</h5>
+            <h3 class="text-success">...</h3>
+            <small class="text-muted">...</small>
           </div>
         </div>
       </div>
@@ -63,17 +51,10 @@
 
     <div class="data-card">
       <div class="search-row">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search by participant name or milestone title">
-        <button class="btn btn-outline-primary btn-sm-pill" type="button">
-          Search
-        </button>
+        <input type="text" class="form-control" placeholder="Search by participant name or milestone title">
+        <button class="btn btn-outline-primary btn-sm-pill" type="button">Search</button>
         <!-- later: only show this button if user is a manager -->
-        <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
-          Add Milestone
-        </button>
+        <button class="btn btn-primary btn-sm-pill ms-auto" type="button">Add Milestone</button>
       </div>
 
       <div class="table-responsive">
@@ -82,41 +63,18 @@
             <tr>
               <th>Participant</th>
               <th>Milestone</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Target Date</th>
               <th>Achievement Date</th>
-              <th>Actions</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <% if (milestones && milestones.length > 0) { %>
               <% milestones.forEach(milestone => { %>
                 <tr>
-                  <td>
-                    <div>
-                      <strong><%= milestone.participantName %></strong>
-                      <br><small class="text-muted"><%= milestone.participantEmail %></small>
-                    </div>
-                  </td>
-                  <td>
-                    <strong><%= milestone.title %></strong>
-                    <% if (milestone.description) { %>
-                      <br><small class="text-muted"><%= milestone.description.substring(0, 50) %>...</small>
-                    <% } %>
-                  </td>
-                  <td>
-                    <span class="badge bg-primary"><%= milestone.type %></span>
-                  </td>
-                  <td>
-                    <% if (milestone.isCompleted) { %>
-                      <span class="badge bg-success">Completed</span>
-                    <% } else { %>
-                      <span class="badge bg-warning">In Progress</span>
-                    <% } %>
-                  </td>
-                  <td><%= milestone.targetDate ? new Date(milestone.targetDate).toLocaleDateString() : 'Not set' %></td>
-                  <td><%= milestone.achievementDate ? new Date(milestone.achievementDate).toLocaleDateString() : 'Pending' %></td>
+                  <td><%= milestone.memberfirstname %></td>
+                  <td><%= milestone.milestonetitle %></td>
+                  <td><%= milestone.milestonedate.toLocaleDateString() %></span></td>
                   <td>
                     <!-- later: wrap these in manager-only checks -->
                     <button class="btn btn-outline-primary btn-sm-pill">

@@ -17,7 +17,7 @@
   <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <%- include('../partials/header') %>
+  <%- include('../../partials/header') %>
 
   <div class="container">
     <div class="page-header">
@@ -46,29 +46,24 @@
         <table class="table align-middle mb-0">
           <thead>
             <tr>
-              <th>Survey Title</th>
+              <th>Member</th>
               <th>Event</th>
-              <th>Status</th>
-              <th>Responses</th>
-              <th>Created</th>
-              <th>Actions</th>
+              <th>Overall Score</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             <% if (surveys && surveys.length > 0) { %>
               <% surveys.forEach(survey => { %>
                 <tr>
-                  <td><%= survey.title %></td>
-                  <td><%= survey.eventName %></td>
-                  <td>
-                    <span class="badge bg-success">Active</span>
-                  </td>
-                  <td><%= survey.responseCount || 0 %></td>
-                  <td><%= survey.createdAt ? new Date(survey.createdAt).toLocaleDateString() : 'N/A' %></td>
+                  <td><%= survey.memberfirstname %></td>
+                  <td><%= survey.eventname %></td>
+                  <td><%= survey.surveyoverallscore %></td>
                   <td>
                     <!-- later: wrap these in manager-only checks -->
                     <button class="btn btn-outline-primary btn-sm-pill">
-                      View Results
+                      View Response
                     </button>
                     <button class="btn btn-outline-primary btn-sm-pill">
                       Edit
