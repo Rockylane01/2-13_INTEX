@@ -70,7 +70,7 @@ app.get("/", (req, res) => {
 
 
 app.get("/login", (req, res) => {
-  res.render("login/login", { title: "Login", active: "login" });
+  res.render("login/login", { title: "Login", active: "login", user: req.session.user });
 });
 
 app.post("/login", async (req, res) => {
