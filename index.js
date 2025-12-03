@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 const knex = require("knex")({
   client: "pg",
@@ -73,12 +74,36 @@ app.get("/login", (req, res) => {
 });
 
 // Filler for the login POST route
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  // Here you would normally validate the user's credentials
-  // For demonstration, we'll assume any login is valid
-  req.session.user = { email: email }; // Store user info in session
-  res.redirect("/");
+    try {
+        // 1. Look up user
+        const result = await db.query(
+            "SELECT credpass FROM credentials WHERE credemail = $1",
+            [email]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).send("Invalid credentials");
+        }
+
+        const hashedPassword = result.rows[0].credpass;
+
+        // 2. Compare entered password with stored hash
+        const valid = await bcrypt.compare(password, hashedPassword);
+
+        if (!valid) {
+            return res.status(400).send("Invalid credentials");
+        }
+
+        // 3. Set session (or however you track login)
+        req.session.userEmail = email;
+
+        res.redirect("/");
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server error");
+    }
 });
 
 app.get("/logout", (req, res) => {
