@@ -148,6 +148,22 @@ FROM 'C:/Program Files/PostgreSQL/import/New/output.csv'
 DELIMITER ','
 CSV HEADER;
 
+WITH raw_csv AS (
+    SELECT *
+    FROM (
+        COPY (
+            SELECT *
+            FROM pg_read_file('C:\Program Files\PostgreSQL\import\New\output.csv')
+        ) TO STDOUT
+    ) AS tmp(credemail TEXT, credpass TEXT)
+)
+INSERT INTO credentials (credemail, credpass)
+SELECT
+    regexp_replace(credemail, '[\u200B-\u200D\uFEFF]', '', 'g') AS credemail,
+    regexp_replace(credpass, '[\u200B-\u200D\uFEFF]', '', 'g') AS credpass
+FROM raw_csv;
+
+
 
 
 -- adjust the auto-incrementing serial values
