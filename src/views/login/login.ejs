@@ -17,29 +17,13 @@
   <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light ella-nav">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="/images/ella-rises-logo.png" alt="Ella Rises Logo" class="ella-logo">
-            <span>Ella Rises</span>
-        </a>
-        <div class="navbar-nav ms-auto ella-nav-links">
-            <a class="nav-link" href="/events">Events</a>
-            <a class="nav-link" href="/surveys">Surveys</a>
-            <a class="nav-link" href="/milestones">Milestones</a>
-            <a class="nav-link" href="/donations">Donations</a>
-            <a class="nav-link" href="/users">Users</a>
-        </div>
-    </div>
-  </nav>
+<!-- HEADER -->
+<%- include('../../partials/header.ejs', { user }) %>
 
   <div class="container login-wrapper">
     <div class="login-card form-card">
-      <div class="page-header mb-3">
-        <h1 class="page-title">Sign in</h1>
-        <p class="page-subtitle">
-          Log in to manage participants, events, surveys, milestones, and donations.
-        </p>
+      <div id="login-header" class="page-header mb-3">
+        <h1 class="page-title">Sign In</h1>
       </div>
 
       <!-- later you can change action="/login" method="POST" with real logic -->
@@ -68,7 +52,14 @@
           Log in
         </button>
       </form>
+      <p id="noAccount">Don't have an account? <a id="signUp" href="/register">Sign Up</a></p>
+
     </div>
+  </div>
+
+  <!-- footer details ish -->
+  <div>
+    <p class="login-footer">© 2025 Ella Rises. All Rights Reserved.</p>
   </div>
 
   <script

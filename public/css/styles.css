@@ -9,6 +9,7 @@
     --ella-charcoal: #3A3F3B;
     --ella-cream:   #F9F5EA;
     --ella-white:   #FFFFFF;
+    --ella-blue:    #99B7C6;
   }
   
   /* ====== Base ====== */
@@ -410,7 +411,8 @@
   }
   
   .page-title {
-    font-family: "DM Serif Display", "Times New Roman", serif;
+    font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
     font-size: 1.7rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -479,7 +481,7 @@
   /* ====== Login layout ====== */
   
   .login-wrapper {
-    min-height: calc(100vh - 80px);
+    min-height: 71vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -488,6 +490,31 @@
   .login-card {
     max-width: 420px;
     width: 100%;
+    padding-bottom: 0px;
+  }
+
+  #login-header {
+    margin-top: 0px;
+  }
+
+  .login-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3a3f3bb4;
+    font-size: .9rem;
+    margin-top: 70px;
+  }
+
+  #noAccount {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  #signUp {
+    color: #88a4b3;
+    transition: all 0.35s ease;
   }
   
   /* ====== Footer ====== */
