@@ -115,7 +115,62 @@ app.get("/signUp", (req, res) => {
   res.render("login/signUp", {title: "Sign Up"});
 });
 
+app.post("/signUp", async (req, res) => {
+  try {
+    let { email, password } = req.body;
 
+    // Make sure email and password fields are both filled out
+    if (!email || !password) {
+      return res.status(400).render("login/signUp", { 
+        title: "Sign Up",
+        error_message: "Email and password are required." 
+      });
+    }
+
+    // get rid of extra white space
+    email = email.trim();
+    password = password.trim();
+
+    // Checking if the user already exists
+    const existing = await knex("credentials")
+      .where("credemail", email)
+      .first();
+
+    if (existing) {
+      return res.status(400).render("login/signUp", { 
+        title: "Sign Up",
+        error_message: "An account with this email already exists." 
+      });
+    }
+
+    // Hashing the password before storing it
+    const SALT_ROUNDS = 10;   // normal & safe
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Creating the new user object for the DB
+    const newUser = {
+      credemail: email,
+      credpass: hashedPassword
+    };
+
+    // Inserting new user info into the database
+    await knex("credentials").insert(newUser);
+
+    // 6️⃣ Auto-login the user OR redirect to login page
+    req.session.user = { email };   // logs them in automatically
+
+    res.redirect("/");
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).render("login/signUp", { 
+      title: "Sign Up",
+      error_message: "Server error — please try again." 
+    });
+  }
+});
+
+// Log out
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
