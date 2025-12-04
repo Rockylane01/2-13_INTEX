@@ -25,3 +25,6 @@ many
 to test - adding a survey
 CRUD on surveys? did I do that? I forgot
 pass in more back buttons and variables about event names and stuff across pages.
+
+
+-- calculate user donation total instead of referencing the static column
