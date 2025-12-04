@@ -135,6 +135,14 @@ app.get("/events", (req, res) => {
     });
 });
 
+// Render event creation form
+app.get("/eventAdd", (req, res) => {
+  res.render('events/eventAdd', {
+    title: "Edit Event",
+    active: "events"
+  });
+});
+
 app.get("/donations", (req, res) => {
   knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
     .then(result => {
