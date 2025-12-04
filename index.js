@@ -1150,6 +1150,7 @@ app.post("/donationform", async (req, res) => {
 
     await knex("donations").insert({
       memberid: memberidvalue,
+      donorname: donorname,
       donationdate: new Date(),
       donationamount: donationamount
     });
