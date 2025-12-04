@@ -46,15 +46,8 @@
       
           <a href="/users" class="btn btn-secondary btn-sm-pill">Clear</a>
       
-          <!-- future: add member button -->
-          <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
-            Add Member
-          </button>
         </form>
       </div>    
-      
-      <p><%= users.length %></p>
-      <p><%= users[0].memberfirstname %></p>
 
       <div class="table-responsive">
         <table class="table align-middle mb-0">
@@ -63,9 +56,11 @@
               <th>First Name</th>
               <th>Last Name</th>
               <th>Email</th>
+              <% if (user && user.userRole === "admin") { %>
               <th></th>
               <th></th>
               <th></th>
+              <% } %>
             </tr>
           </thead>
           <tbody>
@@ -75,23 +70,34 @@
                   <td><%= user.memberfirstname %></td>
                   <td><%= user.memberlastname || 'N/A' %></td>
                   <td><%= user.memberemail || 'N/A' %></td>
-                  <td>
-                    <form action="/user_profile/<%= user.memberid %>" method="GET">
-                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">View Profile</button>
-                    </form>
-                  </td>
-                  <td>
-                    <form action="/editUser/<%= user.memberid %>" method="GET">
-                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">Edit</button>
-                    </form>
-                  </td>
-                  <td>
-                    <form action="/deleteUser/<%= user.memberid %>" 
-                      method="POST" 
-                      onsubmit="return confirm('Are you sure you want to delete this user? This cannot be undone.');">
-                      <button class="btn btn-outline-primary btn-sm-pill" type="submit">Delete</button>
-                    </form>
-                  </td>
+                  <!-- View Profile (admins only) -->
+                    <% if (user && user.userRole === "admin") { %>
+                    <td>
+                      <form action="/user_profile/<%= user.memberid %>" method="GET">
+                        <button class="btn btn-outline-primary btn-sm-pill" type="submit">View Profile</button>
+                      </form>
+                    </td>
+                    <% } %>
+
+                  <!-- Edit (admins only) -->
+                    <% if (user && user.userRole === "admin") { %>
+                    <td>
+                      <form action="/editUser/<%= user.memberid %>" method="GET">
+                        <button class="btn btn-outline-primary btn-sm-pill" type="submit">Edit</button>
+                      </form>
+                    </td>
+                    <% } %>
+
+                  <!-- Delete (admins only) -->
+                    <% if (user && user.userRole === "admin") { %>
+                    <td>
+                      <form action="/deleteUser/<%= user.memberid %>" 
+                        method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this user? This cannot be undone.');">
+                        <button class="btn btn-outline-primary btn-sm-pill" type="submit">Delete</button>
+                      </form>
+                    </td>
+                    <% } %>
                 </tr>
               <% }) %>
             <% } else { %>
@@ -104,7 +110,7 @@
           </tbody>
         </table>
         <!-- Compact Pagination -->
-        <div class="pagination mt-3 d-flex align-items-center gap-2">
+        <div class="pagination mt-3 d-flex align-items-center justify-content-center gap-2">
 
           <% if (totalPages > 1) { %>
 
