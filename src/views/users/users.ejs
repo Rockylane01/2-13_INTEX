@@ -103,6 +103,40 @@
             <% } %>
           </tbody>
         </table>
+        <!-- Compact Pagination -->
+        <div class="pagination mt-3 d-flex align-items-center gap-2">
+
+          <% if (totalPages > 1) { %>
+
+            <!-- Previous -->
+            <a class="btn btn-outline-primary btn-sm-pill <%= currentPage === 1 ? 'disabled' : '' %>"
+              href="<%= currentPage > 1 ? `/users?page=${currentPage - 1}&search=${search}` : '#' %>">
+              ← Prev
+            </a>
+
+            <% 
+              // Determine the page window
+              const startPage = Math.max(1, currentPage - 2);
+              const endPage = Math.min(totalPages, currentPage + 2);
+            %>
+
+            <!-- Page number buttons -->
+            <% for (let i = startPage; i <= endPage; i++) { %>
+              <a class="btn btn-sm-pill <%= i === currentPage ? 'btn-primary' : 'btn-outline-primary' %>"
+                href="/users?page=<%= i %>&search=<%= search %>">
+                <%= i %>
+              </a>
+            <% } %>
+
+            <!-- Next -->
+            <a class="btn btn-outline-primary btn-sm-pill <%= currentPage === totalPages ? 'disabled' : '' %>"
+              href="<%= currentPage < totalPages ? `/users?page=${currentPage + 1}&search=${search}` : '#' %>">
+              Next →
+            </a>
+
+          <% } %>
+
+        </div>
       </div>
     </div>
 

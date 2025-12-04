@@ -887,12 +887,15 @@ app.post("/deleteMilestone/:id/:title", (req, res) => {
 app.get("/users", requireRole("admin"), async (req, res) => {
   try {
     const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const offset = (page - 1) * limit;
 
-    let query = knex("members")
-      .select(["memberid", "memberfirstname", "memberlastname", "memberemail"]);
+    // 1️⃣ Count total users that match search
+    const countQuery = knex("members").count("memberid as count");
 
-    if (search.trim() !== "") {
-      query = query.where(builder => {
+    if (search) {
+      countQuery.where((builder) => {
         builder
           .where("memberfirstname", "ilike", `%${search}%`)
           .orWhere("memberlastname", "ilike", `%${search}%`)
@@ -900,19 +903,44 @@ app.get("/users", requireRole("admin"), async (req, res) => {
       });
     }
 
-    const users = await query.orderBy("memberlastname");
+    const totalCount = await countQuery.first();
+    const totalUsers = Number(totalCount.count);
+
+    // 2️⃣ Get ONLY this page of users
+    const usersQuery = knex("members")
+      .select("memberid", "memberfirstname", "memberlastname", "memberemail");
+
+    if (search) {
+      usersQuery.where((builder) => {
+        builder
+          .where("memberfirstname", "ilike", `%${search}%`)
+          .orWhere("memberlastname", "ilike", `%${search}%`)
+          .orWhere("memberemail", "ilike", `%${search}%`);
+      });
+    }
+
+    const users = await usersQuery
+      .limit(limit)
+      .offset(offset);
+
+    // 3️⃣ Calculate number of pages
+    const totalPages = Math.ceil(totalUsers / limit);
 
     res.render("users/users", {
       title: "Users",
       active: "users",
       users,
-      search
+      search,
+      currentPage: page,
+      totalPages
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Error loading users");
   }
 });
+
 
 
 app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => {
