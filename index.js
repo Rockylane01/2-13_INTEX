@@ -44,7 +44,6 @@ function requireRole(...allowedRoles) {
   };
 }
 
-
 app.use((req, res, next) => {
   // allow login and logout routes without authentication
   if (req.path === '/login' || req.path === '/logout') {
@@ -54,11 +53,12 @@ app.use((req, res, next) => {
   // check if user is authenticated
   // if (!req.session.user) {
   //   return res.redirect("/login");
-  //}
+  // }
   // set user in locals for views
   res.locals.user = req.session.user;
   next();
 });
+
 
 // Routes
 app.get("/", (req, res) => {
@@ -200,7 +200,17 @@ app.post("/signUp", async (req, res) => {
     await knex("members").insert(newMember)
 
     // Auto-login the user OR redirect to login page
-    req.session.user = { email };   // logs them in automatically
+    // Fetch the newly created member so we have their ID and role
+    const createdMember = await knex("members")
+    .where("memberemail", email)
+    .first();
+
+    // Store full session info
+    req.session.user = {
+    email,
+    userID: createdMember.memberid,
+    userRole: createdMember.memberrole
+    };
 
     res.redirect("/");
 
@@ -933,6 +943,70 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
           });
         });
     });
+});
+
+// Edit user
+app.get("/editUser/:id", requireRole("admin"), async (req, res) => {
+  const memberid = req.params.id;
+
+  try {
+    const member = await knex("members")
+      .where("memberid", memberid)
+      .first();
+
+    if (!member) {
+      return res.status(404).send("User not found");
+    }
+
+    res.render("users/editUser", {
+      title: "Edit User",
+      member: member,
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading user");
+  }
+});
+
+// Save the edit user changes
+app.post("/editUser/:id", requireRole("admin"), async (req, res) => {
+  const memberid = req.params.id;
+
+  const {
+    memberfirstname,
+    memberlastname,
+    memberemail,
+    memberphone,
+    membercity,
+    memberstate,
+    memberzip,
+    memberschooloremployer,
+    memberfieldofinterest,
+    memberrole
+  } = req.body;
+
+  try {
+    await knex("members")
+      .where("memberid", memberid)
+      .update({
+        memberfirstname,
+        memberlastname,
+        memberemail,
+        memberphone,
+        membercity,
+        memberstate,
+        memberzip,
+        memberschooloremployer,
+        memberfieldofinterest,
+        memberrole
+      });
+
+    res.redirect("/users");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error updating user");
+  }
 });
 
   
