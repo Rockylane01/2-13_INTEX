@@ -587,7 +587,7 @@ app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) 
 // Show empty form to add a new event (admin only)
 app.get("/eventEdit", requireRole("admin"), (req, res) => {
   // Render the same form, but with no pre-filled data
-  res.render("eventEdit", {
+  res.render("events/eventEdit", {
     title: "Add New Event",
     event: {
       eventid: null,
