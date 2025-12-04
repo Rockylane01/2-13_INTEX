@@ -895,7 +895,7 @@ app.post("/deleteMilestone/:id/:title", (req, res) => {
     })
 });
 
-app.get("/users", requireRole("admin"), async (req, res) => {
+app.get("/users", requireRole("admin", "participant"), async (req, res) => {
   try {
     const search = req.query.search || "";
     const page = parseInt(req.query.page) || 1;

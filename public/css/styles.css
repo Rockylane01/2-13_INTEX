@@ -241,18 +241,32 @@
     font-weight: 600;
     padding: 0.65rem 1.6rem;
     font-size: 0.95rem;
+    text-decoration: none;
     background-color: transparent;
   }
   
   .btn-outline-primary:hover {
     background-color: var(--ella-charcoal);
     color: var(--ella-cream);
+    text-decoration: none;
   }
   
   .btn-sm-pill {
     border-radius: 999px;
     padding: 0.45rem 1.1rem;
     font-size: 0.85rem;
+  }
+
+  .btn-secondary {
+    background-color: var(--ella-charcoal);
+    text-decoration: none;
+    font-family: Montserrat;
+    font-weight: 600;
+  }
+
+  .btn-secondary:hover {
+    text-decoration: none;
+    background-color: #3a3f3bd1;
   }
 
   /* ===== Footer ===== */
