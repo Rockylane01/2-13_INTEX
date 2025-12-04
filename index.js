@@ -193,6 +193,60 @@ app.get("/events", (req, res) => {
     });
 });
 
+app.get("/eventView/:id", (req, res) => {
+  const eventId = req.params.id;
+
+  // Get event details with template info
+  knex.select(
+    'events.*',
+    'eventtemplates.eventname',
+    'eventtemplates.eventtype',
+    'eventtemplates.eventdescription',
+    'eventtemplates.eventrecurrencepattern'
+  )
+    .from('events')
+    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
+    .where('events.eventid', eventId)
+    .first()
+    .then(event => {
+      if (!event) {
+        return res.status(404).send("Event not found");
+      }
+
+      // Get participant count and details
+      knex.select(
+        'members.memberid',
+        'members.memberfirstname',
+        'members.memberlastname',
+        'members.memberemail',
+        'registration.registrationstatus',
+        'registration.registrationcheckintime'
+      )
+        .from('participantevent')
+        .join('members', 'participantevent.memberid', '=', 'members.memberid')
+        .join('registration', 'participantevent.peid', '=', 'registration.peid')
+        .where('participantevent.eventid', eventId)
+        .then(participants => {
+          const eventWithCount = {
+            ...event,
+            registeredcount: participants.length,
+            participants: participants
+          };
+
+          res.render("events/eventView", {
+            title: "Event Details",
+            active: "events",
+            event: eventWithCount,
+            participants: participants
+          });
+        });
+    })
+    .catch(err => {
+      console.error("Error fetching event:", err);
+      res.status(500).send("Server error");
+    });
+});
+
 // Render event creation form
 app.get("/eventAdd", (req, res) => {
   res.render('events/eventAdd', {
@@ -215,7 +269,7 @@ app.get("/donations", (req, res) => {
     .then(result => {
       let totalAmount = result[0].total || 0;
 
-      knex.select('memberfirstname', 'donationdate', 'donationamount')
+      knex.select('donations.donationid', 'memberfirstname', 'donationdate', 'donationamount')
       .from('donations')
       .join('members', 'donations.memberid', '=', 'members.memberid')
       .then(donations => {
@@ -225,11 +279,88 @@ app.get("/donations", (req, res) => {
           donations: donations,
           totalAmount: totalAmount
         });
-        
+
       });
     })
 
-  
+
+});
+
+app.get("/donationView/:id", (req, res) => {
+  const donationId = req.params.id;
+
+  // Get donation details with member info
+  knex.select(
+    'donations.*',
+    'members.memberfirstname',
+    'members.memberlastname',
+    'members.memberemail',
+    'members.memberphone',
+    'members.membercity',
+    'members.memberstate',
+    'members.memberrole'
+  )
+    .from('donations')
+    .join('members', 'donations.memberid', '=', 'members.memberid')
+    .where('donations.donationid', donationId)
+    .first()
+    .then(donation => {
+      if (!donation) {
+        return res.status(404).send("Donation not found");
+      }
+
+      const memberId = donation.memberid;
+
+      if (!memberId) {
+        console.error('No memberId found for donation:', donationId);
+        return res.status(500).send("Invalid donation data - no member ID");
+      }
+
+      console.log('Fetching donor summary for memberId:', memberId);
+
+      // Get all donations for this member first
+      knex('donations')
+        .where('memberid', memberId)
+        .then(allDonations => {
+          console.log('All donations for member:', allDonations);
+
+          // Calculate summary manually
+          const totalDonations = allDonations.length;
+          const totalAmount = allDonations.reduce((sum, d) => sum + parseFloat(d.donationamount || 0), 0);
+          const averageDonation = totalDonations > 0 ? totalAmount / totalDonations : 0;
+
+          const dates = allDonations.map(d => new Date(d.donationdate)).filter(d => !isNaN(d));
+          const firstDonation = dates.length > 0 ? new Date(Math.min(...dates)) : null;
+          const lastDonation = dates.length > 0 ? new Date(Math.max(...dates)) : null;
+
+          const donorSummary = {
+            totalDonations,
+            totalAmount,
+            averageDonation,
+            firstDonation,
+            lastDonation
+          };
+
+          console.log('Calculated donor summary:', donorSummary);
+
+          // Filter out the current donation from other donations
+          const otherDonations = allDonations
+            .filter(d => d.donationid !== parseInt(donationId))
+            .sort((a, b) => new Date(b.donationdate) - new Date(a.donationdate));
+
+          res.render("donations/donationView", {
+            title: "Donation Details",
+            active: "donations",
+            donation: donation,
+            donorSummary: donorSummary,
+            otherDonations: otherDonations
+          });
+        });
+    })
+    .catch(err => {
+      console.error("Error fetching donation:", err);
+      res.status(500).send("Server error");
+    });
 });
 
 app.post("/deleteDonation/:id", (req, res) => {
@@ -254,6 +385,43 @@ app.get("/surveys", (req, res) => {
         active: "surveys",
         surveys: surveys
       });
+    });
+});
+
+app.get("/surveyView/:id", (req, res) => {
+  const peid = req.params.id;
+
+  knex.select(
+    'surveys.*',
+    'members.memberfirstname',
+    'members.memberlastname',
+    'members.memberemail',
+    'eventtemplates.eventname',
+    'events.eventdatetimestart',
+    'npsbucketlookup.surveynpsbucket'
+  )
+    .from('surveys')
+    .join('participantevent', 'surveys.peid', '=', 'participantevent.peid')
+    .join('members', 'participantevent.memberid', '=', 'members.memberid')
+    .join('events', 'participantevent.eventid', '=', 'events.eventid')
+    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
+    .leftJoin('npsbucketlookup', 'surveys.surveyrecommendationscore', '=', 'npsbucketlookup.surveyrecommendationscore')
+    .where('surveys.peid', peid)
+    .first()
+    .then(survey => {
+      if (!survey) {
+        return res.status(404).send("Survey not found");
+      }
+
+      res.render("surveys/surveyView", {
+        title: "Survey Response",
+        active: "surveys",
+        survey: survey
+      });
+    })
+    .catch(err => {
+      console.error("Error fetching survey:", err);
+      res.status(500).send("Server error");
     });
 });
 

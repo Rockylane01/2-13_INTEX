@@ -77,7 +77,6 @@
               <th>Amount</th>
               <th>Date</th>
               <th></th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -91,9 +90,9 @@
                   <td><%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %></td>
                   <td>
                     <!-- later: wrap these in manager-only checks -->
-                    <button class="btn btn-outline-primary btn-sm-pill">
+                    <a href="/donationView/<%= donation.donationid %>" class="btn btn-outline-primary btn-sm-pill">
                       View
-                    </button>
+                    </a>
                     <button class="btn btn-outline-primary btn-sm-pill">
                       Edit
                     </button>

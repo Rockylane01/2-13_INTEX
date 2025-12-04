@@ -50,8 +50,8 @@
                                         <td><%= event.eventname %></td>
                                         <td><%= event.eventdatetimestart.toLocaleString() %></td>
                                         <td><%= event.eventlocation %></td>
-                                        <td><a href="">View</a></td>
-                                        <td><a href="">Edit</a></td>
+                                        <td><a href="/eventView/<%= event.eventid %>">View</a></td>
+                                        <td><a href="/editEvent/<%= event.eventid %>">Edit</a></td>
                                     </tr>
                                 <% }) %>
                             <% } else { %>
