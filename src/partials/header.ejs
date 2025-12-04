@@ -1,49 +1,49 @@
 <!-- Add admin-only button to admin.ejs -->
-
-<!-- Top white bar (only for visitors) -->
-<% if (!user) { %>
-  <div class="top-auth-bar">
-    <div class="auth-links">
-      <a href="/register">Register</a> 
-      <a href="#">|</a>
-      <a href="/login">Log in</a>
-    </div>
-  </div>
-  <% } else { %>
-  <div class="top-auth-bar">
-    <div class="auth-links">
-      <a href="/profile">Profile</a> |
-      <a href="/logout">Log out</a>
-    </div>
-  </div>
-  <% } %>
-  
-  <!-- Pink navigation bar -->
-  <nav class="pink-nav">
-    <% if (!user) { %>
-      <div class="nav-logo">
-          <a href="/"><img src="/images/ellariseslogo2.png" alt="Ella Rises Logo"></a>
+<div class="nav-bar">
+  <!-- Top white bar (only for visitors) -->
+  <% if (!user) { %>
+    <div class="top-auth-bar">
+      <div class="auth-links">
+        <a href="/register">Register</a> 
+        <a href="#">|</a>
+        <a href="/login">Log in</a>
       </div>
+    </div>
     <% } else { %>
-      <div>
-        <a href="/"><img src="/images/ellariseslogo.png" alt="Ella Rises Logo"></a>
+    <div class="top-auth-bar">
+      <div class="auth-links">
+        <a href="/profile">Profile</a> |
+        <a href="/logout">Log out</a>
       </div>
-      <% } %>
-  
-      
-      <div class="nav-links">
-          <a href="/donations/donations">Donations</a>
-          <a href="/donations/donationform" class="donate-btn">donate</a>
-          <a href="/milestones/milestones">Milestones</a>
-          
-          <% if (user) { %>
-          <a href="/events/events">Events</a>
-          <% } %>
-          
-          <!-- to be made admin-only -->
-          <a href="/admin/admin">Admin Portal</a>
+    </div>
+    <% } %>
+    
+    <!-- Pink navigation bar -->
+    <nav class="pink-nav">
+      <% if (!user) { %>
+        <div class="nav-logo">
+            <a href="/"><img src="/images/ellariseslogo2.png" alt="Ella Rises Logo"></a>
+        </div>
+      <% } else { %>
+        <div>
+          <a href="/"><img src="/images/ellariseslogo.png" alt="Ella Rises Logo"></a>
+        </div>
+        <% } %>
+    
+        
+        <div class="nav-links">
+            <a href="/donations/donations">Donations</a>
+            <a href="/donations/donationform" class="donate-btn">donate</a>
+            <a href="/milestones/milestones">Milestones</a>
+            
+            <% if (user) { %>
+            <a href="/events/events">Events</a>
+            <% } %>
+            
+            <!-- to be made admin-only -->
+            <a href="/admin/admin">Admin Portal</a>
 
-      </div>
- 
-  </nav>
+        </div>
   
+    </nav>
+</div>  

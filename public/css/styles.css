@@ -48,6 +48,9 @@
   }
   
 /* ===== NAVBAR ===== */
+.nav-bar {
+  z-index: 2;
+}
 
 /* Top white bar */
 .top-auth-bar {
