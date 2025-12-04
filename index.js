@@ -991,14 +991,32 @@ app.post("/editUser/:id", requireRole("admin"), async (req, res) => {
 });
 
   
-app.post("/deleteUser/:id", (req, res) => {
-    knex("members").where("memberid", req.params.id).del().then(members => {
-        res.redirect("/users");
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({err});
-    })
+// DELETE user (admin only)
+app.post("/deleteUser/:id", requireRole("admin"), async (req, res) => {
+  const memberid = req.params.id;
+
+  try {
+    // First delete credentials (foreign key may depend on order)
+    await knex("credentials")
+      .where("credemail", function() {
+        this.select("memberemail")
+            .from("members")
+            .where("memberid", memberid);
+      })
+      .del();
+
+    // Then delete the member record
+    await knex("members")
+      .where("memberid", memberid)
+      .del();
+
+    res.redirect("/users");
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).send("Error deleting user");
+  }
 });
+
 
 app.get("/donationform", async (req, res) => {
   const userID = req.session.user.userID || null;
