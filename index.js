@@ -734,7 +734,7 @@ app.get("/donations", (req, res) => {
           active: "donations",
           donations: donations,
           totalAmount: totalAmount,
-          userRole: req.session.user.userRole
+          userRole: req.session.user ? reg.session.user.userRole : null
         });
 
       });
@@ -1133,7 +1133,7 @@ app.post("/deleteUser/:id", requireRole("admin"), async (req, res) => {
 
 
 app.get("/donationform", async (req, res) => {
-  const userID = req.session.user.userID || null;
+  const userID = req.session.user ? req.session.user.userID : null;
 
   res.render("donations/donationform", {
     title: "Make a Donation",
