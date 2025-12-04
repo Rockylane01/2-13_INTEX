@@ -124,8 +124,8 @@ app.post("/login", async (req, res) => {
     // Store session
     req.session.user = {
       email,
-      userID: member ? member.memberid : null,
-      userRole: member && member.memberrole ? member.memberrole : "guest"
+      userID: member?.memberid || null,
+      userRole: member?.memberrole || null
     };
 
     res.redirect("/");

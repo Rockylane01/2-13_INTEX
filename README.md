@@ -17,7 +17,6 @@ donations.ejs
  - sort/search?
 
 profile button in header
- - use session.userid to display profile.
  - allow user to see sensitive info on their own profile.
  - forgot if I let admins do that for all.
 
@@ -25,8 +24,6 @@ milestones.ejs
  - search, add, view (do we need?), sort
  - edit button only viewable by admins and the relevant user
 
-index.ejs
- - all users can currently see the admin button (but not use it, which is good)
 
 many
  - change redirects to login page or when relevant the unauthorized error page
