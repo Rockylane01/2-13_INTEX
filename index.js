@@ -884,17 +884,36 @@ app.post("/deleteMilestone/:id/:title", (req, res) => {
     })
 });
 
-app.get("/users", requireRole("admin"), (req, res) => {
-  knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
-    .from('members')
-    .then(users => {
-      res.render("users/users", {
-        title: "Users",
-        active: "users",
-        users
+app.get("/users", requireRole("admin"), async (req, res) => {
+  try {
+    const search = req.query.search || "";
+
+    let query = knex("members")
+      .select(["memberid", "memberfirstname", "memberlastname", "memberemail"]);
+
+    if (search.trim() !== "") {
+      query = query.where(builder => {
+        builder
+          .where("memberfirstname", "ilike", `%${search}%`)
+          .orWhere("memberlastname", "ilike", `%${search}%`)
+          .orWhere("memberemail", "ilike", `%${search}%`);
       });
+    }
+
+    const users = await query.orderBy("memberlastname");
+
+    res.render("users/users", {
+      title: "Users",
+      active: "users",
+      users,
+      search
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading users");
+  }
 });
+
 
 app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => {
   const memberid = req.params.id;

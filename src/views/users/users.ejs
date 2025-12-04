@@ -31,17 +31,26 @@
 
     <div class="data-card">
       <div class="search-row">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search by name, email, or role">
-        <button class="btn btn-outline-primary btn-sm-pill" type="button">
-          Search
-        </button>
-        <!-- later: only show this button if user is an admin -->
-        <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
-          Add Member
-        </button>
+        <form action="/users" method="GET" class="d-flex w-100" style="gap: 10px;">
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search by first name, last name, or email"
+            value="<%= typeof search !== 'undefined' ? search : '' %>"
+          >
+      
+          <button class="btn btn-outline-primary btn-sm-pill" type="submit">
+            Search
+          </button>
+      
+          <a href="/users" class="btn btn-secondary btn-sm-pill">Clear</a>
+      
+          <!-- future: add member button -->
+          <button class="btn btn-primary btn-sm-pill ms-auto" type="button">
+            Add Member
+          </button>
+        </form>
       </div>    
       
       <p><%= users.length %></p>
