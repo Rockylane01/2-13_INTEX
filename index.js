@@ -623,7 +623,7 @@ app.get("/eventEdit/:eventid", requireRole("admin"), async (req, res) => {
 
     if (!event) return res.redirect("/events");
 
-    res.render("eventEdit", {
+    res.render("events/eventEdit", {
       title: "Edit Event",
       event
     });
