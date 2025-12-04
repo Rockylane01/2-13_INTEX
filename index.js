@@ -613,47 +613,14 @@ app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) 
 });
 
 // Show empty form to add a new event (admin only)
-app.get("/eventEdit", requireRole("admin"), (req, res) => {
-  // Render the same form, but with no pre-filled data
-  res.render("events/eventEdit", {
-    title: "Add New Event",
-    event: {
-      eventid: null,
-      eventname: "",
-      eventtype: "",
-      eventdescription: "",
-      eventrecurrencepattern: "",
-      eventdatetimestart: "",
-      eventdatetimeend: "",
-      eventlocation: "",
-      eventcapacity: "",
-      eventregistrationdeadline: ""
-    }
-  });
-});
-
-
-app.get("/eventEdit/:eventid", requireRole("admin"), async (req, res) => {
-  const eventid = req.params.eventid;
-
+// GET: Add new event (blank form)
+app.get("/eventEdit", requireRole("admin"), async (req, res) => {
   try {
-    const event = await knex("events")
-      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
-      .select(
-        "events.*",
-        "eventtemplates.eventname",
-        "eventtemplates.eventtype",
-        "eventtemplates.eventdescription",
-        "eventtemplates.eventrecurrencepattern"
-      )
-      .where("events.eventid", eventid)
-      .first();
-
-    if (!event) return res.redirect("/events");
-
+    const eventtemplates = await knex("eventtemplates").select("*");
     res.render("events/eventEdit", {
-      title: "Edit Event",
-      event
+      title: "Add New Event",
+      event: {},
+      eventtemplates
     });
   } catch (err) {
     console.error(err);
@@ -661,59 +628,69 @@ app.get("/eventEdit/:eventid", requireRole("admin"), async (req, res) => {
   }
 });
 
+// GET: Edit existing event
+app.get("/eventEdit/:eventid", requireRole("admin"), async (req, res) => {
+  const { eventid } = req.params;
+  try {
+    const event = await knex("events")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .select(
+        "events.*",
+        "eventtemplates.eventname",
+        "eventtemplates.templateid"
+      )
+      .where("events.eventid", eventid)
+      .first();
+
+    if (!event) return res.redirect("/events");
+
+    const eventtemplates = await knex("eventtemplates").select("*");
+
+    res.render("events/eventEdit", {
+      title: "Edit Event",
+      event,
+      eventtemplates
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/events");
+  }
+});
+
+// POST: Add or update event
 app.post("/eventEdit", requireRole("admin"), async (req, res) => {
   const {
     eventid,
-    eventname,
-    eventtype,
-    eventdescription,
-    eventrecurrence,
-    eventstart,
-    eventend,
+    eventtemplate,
+    eventdatetimestart,
+    eventdatetimeend,
     eventlocation,
     eventcapacity,
-    registrationdeadline
+    eventregistrationdeadline
   } = req.body;
 
   try {
     if (eventid) {
-      // UPDATE existing event
+      // Update existing event
       await knex("events")
-        .where({ eventid: eventid })
+        .where({ eventid })
         .update({
-          eventdatetimestart: new Date(eventstart),
-          eventdatetimeend: new Date(eventend),
-          eventlocation: eventlocation,
-          eventcapacity: eventcapacity,
-          eventregistrationdeadline: new Date(registrationdeadline)
-        });
-
-      await knex("eventtemplates")
-        .where({ templateid: (await knex("events").select("templateid").where({ eventid: eventid }).first()).templateid })
-        .update({
-          eventname: eventname,
-          eventtype: eventtype,
-          eventdescription: eventdescription,
-          eventrecurrencePattern: eventrecurrence
+          templateid: eventtemplate,
+          eventdatetimestart: new Date(eventdatetimestart),
+          eventdatetimeend: new Date(eventdatetimeend),
+          eventlocation,
+          eventcapacity,
+          eventregistrationdeadline: new Date(eventregistrationdeadline)
         });
     } else {
-      // INSERT new event
-      const [templateid] = await knex("eventtemplates")
-        .insert({
-          eventname: eventname,
-          eventtype: eventtype,
-          eventdescription: eventdescription,
-          eventrecurrencePattern: eventrecurrence
-        })
-        .returning("templateid");
-
+      // Insert new event
       await knex("events").insert({
-        templateid: templateid,
-        eventdatetimestart: new Date(eventstart),
-        eventdatetimeend: new Date(eventend),
-        eventlocation: eventlocation,
-        eventcapacity: eventcapacity,
-        eventregistrationdeadline: new Date(registrationdeadline)
+        templateid: eventtemplate,
+        eventdatetimestart: new Date(eventdatetimestart),
+        eventdatetimeend: new Date(eventdatetimeend),
+        eventlocation,
+        eventcapacity,
+        eventregistrationdeadline: new Date(eventregistrationdeadline)
       });
     }
 
@@ -724,14 +701,18 @@ app.post("/eventEdit", requireRole("admin"), async (req, res) => {
   }
 });
 
-app.post("/deleteEvent/:id", (req, res) => {
-    knex("events").where("eventid", req.params.id).del().then(events => {
-        res.redirect("/events");
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({err});
-    })
+
+app.post("/deleteEvent/:id", requireRole("admin"), (req, res) => {
+  knex("events")
+    .where("eventid", req.params.id)
+    .del()
+    .then(() => res.redirect("/events"))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ err });
+    });
 });
+
 
 app.get("/donations", (req, res) => {
   knex.select(knex.raw('SUM(donationamount) as total')).from('donations')

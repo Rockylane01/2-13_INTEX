@@ -61,6 +61,11 @@
         <% if (anyAttended) { %>
           <a href="/surveys?eventid=<%= event.eventid %>" class="btn btn-info ms-2">View All Surveys</a>
         <% } %>
+
+        <% if (userRole === 'admin') { %>
+          <a href="/eventEdit/<%= event.eventid %>" class="btn btn-secondary ms-2">Edit Event</a>
+        <% } %>
+
       <% } %>
     </div>
 
