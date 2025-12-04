@@ -99,16 +99,11 @@ app.post("/login", async (req, res) => {
     const valid = await bcrypt.compare(password, hashedPassword);
 
     if (!valid) {
-      console.log("Password mismatch for:", email);
       return res.status(400).send("Invalid credentials");
     }
 
-    req.session.user = { email };
-    console.log("Login successful for:", email);
-
     res.redirect("/");
   } catch (err) {
-    console.error("Login error:", err);
     res.status(500).send("Server error");
   }
 });
