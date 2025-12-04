@@ -1,3 +1,72 @@
 <!-- This page should only be visible to logged-in admins. -->
 <!-- This should also serve as the add event page. If editing an existing event, the event data should be auto-filled in the fields. -->
-<!-- The action on submit should be an UPDATE OR CREATE on the donation ID in the database. -->
+<!-- The action on submit should be an UPDATE OR CREATE on the event ID in the database. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+  <h1><%= event.eventid ? "Edit Event" : "Add New Event" %></h1>
+
+  <form action="/eventEdit" method="POST">
+    <!-- Hidden field to differentiate update vs insert -->
+    <input type="hidden" name="eventID" value="<%= event.eventid %>">
+
+    <div>
+      <label for="eventName">Event Name:</label>
+      <input type="text" id="eventName" name="eventName" value="<%= event.eventname %>" required>
+    </div>
+
+    <div>
+      <label for="eventType">Event Type:</label>
+      <input type="text" id="eventType" name="eventType" value="<%= event.eventtype %>">
+    </div>
+
+    <div>
+      <label for="eventDescription">Event Description:</label>
+      <textarea id="eventDescription" name="eventDescription"><%= event.eventdescription %></textarea>
+    </div>
+
+    <div>
+      <label for="eventRecurrence">Recurrence Pattern:</label>
+      <input type="text" id="eventRecurrence" name="eventRecurrence" value="<%= event.eventrecurrencepattern %>">
+    </div>
+
+    <div>
+      <label for="eventStart">Start Date/Time:</label>
+      <input type="datetime-local" id="eventStart" name="eventStart" 
+             value="<%= event.eventdatetimestart ? new Date(event.eventdatetimestart).toISOString().slice(0,16) : '' %>">
+    </div>
+
+    <div>
+      <label for="eventEnd">End Date/Time:</label>
+      <input type="datetime-local" id="eventEnd" name="eventEnd" 
+             value="<%= event.eventdatetimend ? new Date(event.eventdatetimend).toISOString().slice(0,16) : '' %>">
+    </div>
+
+    <div>
+      <label for="eventLocation">Location:</label>
+      <input type="text" id="eventLocation" name="eventLocation" value="<%= event.eventlocation %>">
+    </div>
+
+    <div>
+      <label for="eventCapacity">Capacity:</label>
+      <input type="number" id="eventCapacity" name="eventCapacity" value="<%= event.eventcapacity %>">
+    </div>
+
+    <div>
+      <label for="registrationDeadline">Registration Deadline:</label>
+      <input type="datetime-local" id="registrationDeadline" name="registrationDeadline" 
+             value="<%= event.eventregistrationdeadline ? new Date(event.eventregistrationdeadline).toISOString().slice(0,16) : '' %>">
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <p><a href="/events">Back to Events</a></p>
+</body>
+</html>

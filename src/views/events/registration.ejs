@@ -5,3 +5,46 @@
 <!-- If none of the above are true, the button should not be displayed. -->
 <!-- Optional: an admin-only button that displays surveys for this event. Can be visible at any time. -->
 <!-- This page should show a list of those registered to attend the event. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+</head>
+<body>
+  <h1><%= event.eventname %></h1>
+  <p><strong>Type:</strong> <%= event.eventtype %></p>
+  <p><strong>Description:</strong> <%= event.eventdescription %></p>
+  <p><strong>Recurrence Pattern:</strong> <%= event.eventrecurrencepattern %></p>
+  <p><strong>Start:</strong> <%= event.eventdatetimestart.toLocaleString() %></p>
+  <p><strong>End:</strong> <%= event.eventdatetimend.toLocaleString() %></p>
+  <p><strong>Location:</strong> <%= event.eventlocation %></p>
+  <p><strong>Capacity:</strong> <%= event.eventcapacity %></p>
+  <p><strong>Registration Deadline:</strong> <%= event.eventregistrationdeadline.toLocaleString() %></p>
+
+  <div>
+    <% if (showRegisterBtn) { %>
+      <form action="/register/<%= event.eventid %>" method="POST">
+        <button type="submit">Register</button>
+      </form>
+    <% } %>
+
+    <% if (showCancelBtn) { %>
+      <form action="/cancel-registration/<%= event.eventid %>" method="POST">
+        <button type="submit">Cancel Registration</button>
+      </form>
+    <% } %>
+
+    <% if (showTakeSurvey) { %>
+      <form action="/take-survey/<%= event.eventid %>" method="GET">
+        <button type="submit">Take Survey</button>
+      </form>
+    <% } %>
+
+    <% if (surveySubmitted) { %>
+      <p>Survey Submitted!</p>
+    <% } %>
+  </div>
+</body>
+</html>

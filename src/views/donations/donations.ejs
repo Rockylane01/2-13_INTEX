@@ -90,13 +90,11 @@
                   <td class="fw-bold">$<%= donation.donationamount ? donation.donationamount.toLocaleString() : '0' %></td>
                   <td><%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %></td>
                   <td>
-                    <!-- later: wrap these in manager-only checks -->
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      View
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      Edit
-                    </button>
+                    <% if (userRole === "admin") { %>
+                      <a href="/editdonation/<%= donation.donationid %>" class="btn btn-outline-primary btn-sm-pill">
+                        Edit
+                      </a>
+                    <% } %>
                   </td>
                 </tr>
               <% }) %>
