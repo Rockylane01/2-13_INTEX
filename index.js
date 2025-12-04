@@ -146,6 +146,15 @@ app.get("/eventAdd", (req, res) => {
   });
 });
 
+app.post("/deleteEvent/:id", (req, res) => {
+    knex("events").where("eventid", req.params.id).del().then(events => {
+        res.redirect("/events");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/donations", (req, res) => {
   knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
     .then(result => {
@@ -168,6 +177,15 @@ app.get("/donations", (req, res) => {
   
 });
 
+app.post("/deleteDonation/:id", (req, res) => {
+    knex("donations").where("donationid", req.params.id).del().then(donations => {
+        res.redirect("/donations");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/surveys", (req, res) => {
   knex.select('participantevent.peid', 'members.memberfirstname', 'members.memberlastname', 'eventtemplates.eventname', 'surveys.surveyoverallscore')
     .from('participantevent')
@@ -184,6 +202,15 @@ app.get("/surveys", (req, res) => {
     });
 });
 
+app.post("/deleteSurvey/:id", (req, res) => {
+    knex("surveys").where("peid", req.params.id).del().then(sruveys => {
+        res.redirect("/surveys");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/milestones", (req, res) => {
   knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])
     .from('milestones')
@@ -197,6 +224,15 @@ app.get("/milestones", (req, res) => {
     });
 });
 
+app.post("/deleteMilestone/:id/:title", (req, res) => {
+    knex("milestones").where({memberid: req.params.id, milestonetitle: title}).del().then(milestones => {
+        res.redirect("/milestones");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/users", (req, res) => {
   knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
   .from('members')
@@ -207,6 +243,15 @@ app.get("/users", (req, res) => {
       users: users
     });
   });
+});
+
+app.post("/deleteUser/:id", (req, res) => {
+    knex("members").where("memberid", req.params.id).del().then(members => {
+        res.redirect("/users");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
 });
 
 app.get("/user_profile/:id", (req, res) => {
