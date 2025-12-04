@@ -10,9 +10,6 @@ users.ejs
  - add user functionality? I think we should remove that button
  - sort functionality? should be a quick add
 
-admin.ejs
- - view surveys is broken -- I don't know if there's a working spot for that yet
-
 events.ejs
  - sort? search?
 

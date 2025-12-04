@@ -905,7 +905,7 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
           res.render("users/user_profile", {
             title: "User Profile",
             active: "users",
-            user,
+            profileUser: user,
             milestones
           });
         });
