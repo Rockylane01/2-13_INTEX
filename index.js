@@ -567,15 +567,22 @@ app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) 
 
   try {
     // 1. Verify user is allowed to submit: must match session user and registration must exist
-    const reg = await knex("registration as r")
-      .join("participantevent as pe", "r.peid", "pe.peid")
-      .join("events as e", "pe.eventid", "e.eventid")
-      .where({
-        "pe.peid": peid,
-        "pe.memberid": userID,
-        "pe.eventid": eventid
-      })
-      .first();
+      const reg = await knex("registration as r")
+        .join("participantevent as pe", "r.peid", "pe.peid")
+        .join("events as e", "pe.eventid", "e.eventid")
+        .select(
+          "r.*",
+          "pe.memberid",
+          "pe.eventid",
+          "pe.peid",
+          "e.eventdatetimeend"
+        )
+        .where({
+          "pe.peid": peid,
+          "pe.memberid": userID,
+          "pe.eventid": eventid
+        })
+        .first();
 
     if (!reg) return res.status(403).send("You are not authorized to submit this survey.");
 
@@ -599,7 +606,7 @@ app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) 
       surveyusefulnessscore: Number(surveyusefulnessscore),
       surveyinstructorscore: Number(surveyinstructorscore),
       surveyrecommendationscore: Number(surveyrecommendationscore),
-      surveyoverallscore: parseFloat(overallScore.toFixed(2)),
+      surveyoverallscore: Number(overallScore),
       surveycomments: surveycomments || null,
       surveysubmissiondate: surveysubmissiondate ? new Date(surveysubmissiondate) : new Date()
     });
@@ -814,15 +821,19 @@ app.get("/surveys/:peid", requireRole("admin"), async (req, res) => {
 });
 
 
-
-app.post("/deleteSurvey/:id", (req, res) => {
-    knex("surveys").where("peid", req.params.id).del().then(sruveys => {
-        res.redirect("/surveys");
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({err});
-    })
+app.post("/deleteSurvey/:id", async (req, res) => {
+  try {
+    await knex("surveys").where("peid", req.params.id).del();
+    
+    // Redirect back to the page that triggered the delete, or fallback to /surveys
+    const redirectTo = req.query.redirect || "/surveys";
+    res.redirect(redirectTo);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err });
+  }
 });
+
 
 app.get("/milestones", (req, res) => {
   knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])

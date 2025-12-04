@@ -17,8 +17,8 @@
 
     <form action="/submitSurvey" method="POST">
       <!-- Hidden fields for linkage -->
-      <input type="hidden" name="PEID" value="<%= peid %>">
-      <input type="hidden" name="MemberID" value="<%= memberid %>">
+      <input type="hidden" name="peid" value="<%= peid %>">
+      <input type="hidden" name="memberid" value="<%= memberid %>">
       <input type="hidden" name="eventid" value="<%= eventid %>">
       <input type="hidden" name="surveysubmissiondate" value="<%= new Date().toISOString() %>">
 
@@ -66,7 +66,7 @@
         parseInt(document.getElementById('surveyrecommendationscore').value)
       ];
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
-      document.getElementById('surveyoverallscore').value = avg.toFixed(2);
+      document.getElementById('surveyoverallscore').value = avg;
     });
   </script>
 </body>

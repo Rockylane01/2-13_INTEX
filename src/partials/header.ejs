@@ -29,10 +29,10 @@
     
         
         <div class="nav-links">
-          <a href="/events">Events</a>  
           <a href="/donations">Donations</a>
           <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
             <a href="/milestones">Milestones</a>
+            <a href="/events">Events</a> 
           <% } %>
           <% if (user && (user.userRole=== "admin")) { %>
             <a href="/admin">Admin Portal</a>
