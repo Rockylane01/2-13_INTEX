@@ -135,9 +135,67 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Sign up
+app.get("/signUp", (req, res) => {
+  res.render("login/signUp", {title: "Sign Up"});
+});
 
+app.post("/signUp", async (req, res) => {
+  try {
+    let { email, password } = req.body;
 
+    // Make sure email and password fields are both filled out
+    if (!email || !password) {
+      return res.status(400).render("login/signUp", { 
+        title: "Sign Up",
+        error_message: "Email and password are required." 
+      });
+    }
 
+    // get rid of extra white space
+    email = email.trim();
+    password = password.trim();
+
+    // Checking if the user already exists
+    const existing = await knex("credentials")
+      .where("credemail", email)
+      .first();
+
+    if (existing) {
+      return res.status(400).render("login/signUp", { 
+        title: "Sign Up",
+        error_message: "An account with this email already exists." 
+      });
+    }
+
+    // Hashing the password before storing it
+    const SALT_ROUNDS = 10;   // normal & safe
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Creating the new user object for the DB
+    const newUser = {
+      credemail: email,
+      credpass: hashedPassword
+    };
+
+    // Inserting new user info into the database
+    await knex("credentials").insert(newUser);
+
+    // 6️⃣ Auto-login the user OR redirect to login page
+    req.session.user = { email };   // logs them in automatically
+
+    res.redirect("/");
+
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).render("login/signUp", { 
+      title: "Sign Up",
+      error_message: "Server error — please try again." 
+    });
+  }
+});
+
+// Log out
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -526,9 +584,6 @@ app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) 
   }
 });
 
-
-
-
 // Show empty form to add a new event (admin only)
 app.get("/eventEdit", requireRole("admin"), (req, res) => {
   // Render the same form, but with no pre-filled data
@@ -641,13 +696,21 @@ app.post("/eventEdit", requireRole("admin"), async (req, res) => {
   }
 });
 
+app.post("/deleteEvent/:id", (req, res) => {
+    knex("events").where("eventid", req.params.id).del().then(events => {
+        res.redirect("/events");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
 
 app.get("/donations", (req, res) => {
   knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
     .then(result => {
       let totalAmount = result[0].total || 0;
 
-      knex.select('memberfirstname', 'donationdate', 'donationamount')
+      knex.select('donations.donationid', 'memberfirstname', 'donationdate', 'donationamount')
       .from('donations')
       .join('members', 'donations.memberid', '=', 'members.memberid')
       .then(donations => {
@@ -658,11 +721,20 @@ app.get("/donations", (req, res) => {
           totalAmount: totalAmount,
           userRole: req.session.user.userRole
         });
-        
+
       });
     })
 
-  
+
+});
+
+app.post("/deleteDonation/:id", (req, res) => {
+    knex("donations").where("donationid", req.params.id).del().then(donations => {
+        res.redirect("/donations");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
 });
 
 // GET: Admin view all surveys for a specific event
@@ -733,6 +805,15 @@ app.get("/surveys/:peid", requireRole("admin"), async (req, res) => {
 
 
 
+app.post("/deleteSurvey/:id", (req, res) => {
+    knex("surveys").where("peid", req.params.id).del().then(sruveys => {
+        res.redirect("/surveys");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/milestones", (req, res) => {
   knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])
     .from('milestones')
@@ -784,6 +865,15 @@ app.get("/milestoneEdit/:id", async (req, res) => {
   });
 });
 
+app.post("/deleteMilestone/:id/:title", (req, res) => {
+    knex("milestones").where({memberid: req.params.id, milestonetitle: title}).del().then(milestones => {
+        res.redirect("/milestones");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
+});
+
 app.get("/users", requireRole("admin"), (req, res) => {
   knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
     .from('members')
@@ -818,6 +908,15 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
           });
         });
     });
+});
+  
+app.post("/deleteUser/:id", (req, res) => {
+    knex("members").where("memberid", req.params.id).del().then(members => {
+        res.redirect("/users");
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({err});
+    })
 });
 
 app.get("/donationform", async (req, res) => {

@@ -1,0 +1,82 @@
+<!-- This page should only be visible to logged-in admins. -->
+<!-- This should also serve as the add event page. If editing an existing event, the event data should be auto-filled in the fields. -->
+<!-- The action on submit should be an UPDATE OR CREATE on the donation ID in the database. -->
+ <!-- This page should only be visible to logged-in users. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> · Ella Rises</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <%- include('../../partials/header') %>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Add Event</h2>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form action="/addEvent" method="POST">
+
+                    <label for="eventtemplate" class="form-label">Event Template</label>
+                    <select name="eventtemplate" id="eventtemplate" class="form-select mb-3" required aria-label="Event Template select">
+                        <option value="1">AI for Beginners Bootcamp</option>
+                        <option value="2">Community STEM Hackathon</option>
+                        <option value="3">Data Science Study Group</option>
+                        <option value="4">Digital Design Workshop</option>
+                        <option value="5">Ella Rises Annual Leadership Conference</option>
+                        <option value="6">Girls in STEAM Mentoring</option>
+                        <option value="7">Intro to Painting Class</option>
+                        <option value="8">Leadership Circle Meetup</option>
+                        <option value="9">Mentor Office Hours</option>
+                        <option value="10">Monthly Art Studio Workshop</option>
+                        <option value="11">Monthly Coding Club</option>
+                        <option value="12">Robotics Lab Saturday</option>
+                        <option value="13">STEAM Summit & Expo</option>
+                        <option value="15">Web Dev Bootcamp Night</option>
+                        <option value="16">Women in Tech & Art Showcase</option>
+                    </select>
+
+                    <!-- eventdatetimestart -->
+                    <label for="eventdatetimestart" class="form-label">Event Start</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventdatetimestart" id="eventdatetimestart" placeholder="Event Start Time" required />
+
+                    <!-- eventdatetimeend -->
+                    <label for="eventdatetimeend" class="form-label">Event End</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventdatetimeend" id="eventdatetimeend" placeholder="Event End Time" required />
+
+                    <!-- eventlocation -->
+                    <label for="eventlocation" class="form-label">Event Location</label>
+                    <input type="text" class="form-control mb-3" name="eventlocation" id="eventlocation" placeholder="Event Location" required />
+                     
+                    <!-- eventcapacity -->
+                    <label for="eventcapacity" class="form-label">Event Capacity</label>
+                    <input type="number" class="form-control mb-3" name="eventcapacity" id="eventcapacity" placeholder="Event Capacity" required />
+                     
+                    <!-- eventregistrationdeadline -->
+                    <label for="eventregistrationdeadline" class="form-label">Registration Deadline</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventregistrationdeadline" id="eventregistrationdeadline" placeholder="Event Registration Deadline" required />
+
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

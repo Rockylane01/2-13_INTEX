@@ -30,8 +30,8 @@
               <tr>
                 <td><%= s.memberfirstname %></td>
                 <td><%= s.memberlastname %></td>
-                <td><%= s.SurveyOverallScore %></td>
-                <td><%= s.SurveySubmissionDate ? new Date(s.SurveySubmissionDate).toLocaleString() : '-' %></td>
+                <td><%= s.surveyoverallscore %></td>
+                <td><%= s.surveysubmissiondate ? new Date(s.surveysubmissiondate).toLocaleString() : '-' %></td>
                 <td>
                   <a href="/surveys/<%= s.peid %>" class="btn btn-sm btn-outline-primary">View Survey</a>
                 </td>
