@@ -259,8 +259,7 @@ app.get("/registration/:eventid", async (req, res) => {
   const userRole = req.session.user.userRole;
   const eventid = req.params.eventid;
 
-  if (!userID || !["participant", "admin"].includes(userRole))
-    return res.redirect("/");
+  if (!userID || !["participant", "admin"].includes(userRole)) return res.redirect("/");
 
   try {
     // Fetch event info
@@ -281,36 +280,37 @@ app.get("/registration/:eventid", async (req, res) => {
     const now = new Date();
     const eventEnded = now >= event.eventdatetimeend;
 
-    // Check if current user is registered
-    const perow = await knex("participantevent")
-      .where({ memberid: userID, eventid })
+    // Fetch current user's registration, joining with registration table
+    const perow = await knex("participantevent as pe")
+      .join("registration as r", "pe.peid", "=", "r.peid")
+      .where("pe.memberid", userID)
+      .andWhere("pe.eventid", eventid)
+      .select("pe.*", "r.registrationstatus")
       .first();
 
-    let registered = !!perow;
+    const registered = !!perow;
     let showRegisterBtn = !registered && !eventEnded;
     let showCancelBtn = registered && !eventEnded;
 
-    // Survey logic
+    // Survey logic: show survey if user attended and hasn't submitted
     let showTakeSurvey = false;
     let surveySubmitted = false;
 
-    if (perow && eventEnded) {
-      const survey = await knex("surveys")
-        .where({ peid: perow.peid })
-        .first();
+    if (perow && perow.registrationstatus === "attended") {
+      const survey = await knex("surveys").where({ peid: perow.peid }).first();
 
-      if (!survey && perow.registrationstatus === "attended") {
+      if (!survey) {
         showTakeSurvey = true;
         showRegisterBtn = false;
         showCancelBtn = false;
-      } else if (survey) {
+      } else {
         surveySubmitted = true;
         showRegisterBtn = false;
         showCancelBtn = false;
       }
     }
 
-    // Fetch participants
+    // Fetch participants for display
     let participantsquery = knex("participantevent as pe")
       .join("members", "pe.memberid", "=", "members.memberid")
       .join("registration as r", "pe.peid", "=", "r.peid")
@@ -329,7 +329,9 @@ app.get("/registration/:eventid", async (req, res) => {
     // Non-admin filter
     if (userRole !== "admin") {
       if (!eventEnded) {
-        participantsquery.andWhere("r.registrationstatus", "signedup");
+        participantsquery.andWhere(function () {
+          this.where("r.registrationstatus", "signedup").orWhere("r.registrationstatus", "attended");
+        });
       } else {
         participantsquery.andWhere("r.registrationstatus", "attended");
       }
@@ -347,10 +349,6 @@ app.get("/registration/:eventid", async (req, res) => {
       members.memberfirstname
     `);
 
-    console.log(event.eventdatetimeend, typeof event.eventdatetimeend);
-    console.log(participants.map(p => ({ checkin: p.registrationcheckintime, created: p.registrationcreatedat })));
-
-
     res.render("events/registration", {
       title: "Registration",
       event,
@@ -361,7 +359,7 @@ app.get("/registration/:eventid", async (req, res) => {
       showTakeSurvey,
       surveySubmitted,
       participants,
-      userRole: req.session.user.userRole
+      userRole
     });
 
   } catch (err) {
@@ -369,6 +367,7 @@ app.get("/registration/:eventid", async (req, res) => {
     res.redirect("/");
   }
 });
+
 
 
 app.post("/cancel/:eventid", requireRole("participant", "admin"), async (req, res) => {

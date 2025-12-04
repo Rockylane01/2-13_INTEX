@@ -46,38 +46,27 @@
         <span class="text-success ms-2">Survey Submitted</span>
       <% } %>
 
-      <% if (userRole === 'admin') { %>
-        <% // Show "End Event" only if any participant is signed up %>
-        <% const anySignedUp = participants.some(p => p.registrationstatus === 'signedup'); %>
-        <% if (anySignedUp && !eventEnded) { %>
-          <form method="POST" action="/endEvent/<%= event.eventid %>" class="d-inline"
-                onsubmit="return confirm('Are you sure you want to end this event? All signedup participants will be marked no-show.');">
-            <button type="submit" class="btn btn-danger ms-2">End Event</button>
-          </form>
-        <% } %>
-
-        <% // Show "View All Surveys" if any attended participants exist %>
-        <% const anyAttended = participants.some(p => p.registrationstatus === 'attended'); %>
-        <% if (anyAttended) { %>
-          <a href="/surveys?eventid=<%= event.eventid %>" class="btn btn-info ms-2">View All Surveys</a>
-        <% } %>
-
-        <% if (userRole === 'admin') { %>
-          <a href="/eventEdit/<%= event.eventid %>" class="btn btn-secondary ms-2">Edit Event</a>
-        <% } %>
-
+    <% if (userRole === 'admin') { %>
+      <% // Show "End Event" only if the event has ended and any participant is signed up %>
+      <% const anySignedUp = participants.some(p => p.registrationstatus === 'signedup'); %>
+      <% if (eventEnded && anySignedUp) { %>
+        <form method="POST" action="/endEvent/<%= event.eventid %>" class="d-inline"
+              onsubmit="return confirm('Are you sure you want to end this event? All signed-up participants will be marked no-show.');">
+          <button type="submit" class="btn btn-danger ms-2">End Event</button>
+        </form>
       <% } %>
-    </div>
 
+      <% // Show "View All Surveys" if any attended participants exist %>
+      <% const anyAttended = participants.some(p => p.registrationstatus === 'attended'); %>
+      <% if (anyAttended) { %>
+        <a href="/surveys?eventid=<%= event.eventid %>" class="btn btn-info ms-2">View All Surveys</a>
+      <% } %>
 
-    <% if (userRole === 'admin' && participants.some(p => p.registrationstatus === 'signedup')) { %>
-      <form method="POST" action="/endEvent/<%= event.eventid %>" 
-            onsubmit="return confirm('Are you sure you want to end this event? All signed-up participants will be marked as no-show.');"
-            class="mb-3">
-        <button type="submit" class="btn btn-danger">End Event</button>
-      </form>
+      <% // Show "Edit Event" button for admins %>
+      <a href="/eventEdit/<%= event.eventid %>" class="btn btn-secondary ms-2">Edit Event</a>
     <% } %>
 
+    </div>
 
 
     <!-- Participants Table -->
@@ -111,10 +100,13 @@
                   return a.memberfirstname.localeCompare(b.memberfirstname);
                 })
                 .forEach(p => { 
-                  const checkInText = p.registrationstatus === 'attended' ? 'Check Out' : 'Check In';
-                  const confirmMessage = p.registrationstatus !== 'signedup'
-                    ? `Are you sure you want to check in someone with the status of ${p.registrationstatus}?`
-                    : 'Proceed?';
+                  if (p.registrationstatus === 'attended') {
+                      checkInText = 'Check Out';
+                      confirmMessage = `Are you sure you want to check out ${p.memberfirstname} ${p.memberlastname}?`;
+                  } else if (p.registrationstatus !== 'signedup') {
+                      checkInText = 'Check In';
+                      confirmMessage = `Are you sure you want to check in someone with the status of ${p.registrationstatus}?`;
+                  }
             %>
               <tr>
                 <td><%= p.memberfirstname %></td>

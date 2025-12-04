@@ -10,63 +10,63 @@
   <%- include('../../partials/header') %>
 
   <div class="container mt-4">
-    <h2>Survey: <%= eventName %></h2>
-    <p class="text-muted"><%= eventDescription %></p>
-    <p><strong>Date:</strong> <%= new Date(eventStart).toLocaleString() %> - <%= new Date(eventEnd).toLocaleString() %></p>
-    <p><strong>Location:</strong> <%= eventLocation %></p>
+    <h2>Survey: <%= eventname %></h2>
+    <p class="text-muted"><%= eventdescription %></p>
+    <p><strong>Date:</strong> <%= new Date(eventstart).toLocaleString() %> - <%= new Date(eventend).toLocaleString() %></p>
+    <p><strong>Location:</strong> <%= eventlocation %></p>
 
     <form action="/submitSurvey" method="POST">
       <!-- Hidden fields for linkage -->
-      <input type="hidden" name="PEID" value="<%= PEID %>">
-      <input type="hidden" name="MemberID" value="<%= MemberID %>">
+      <input type="hidden" name="PEID" value="<%= peid %>">
+      <input type="hidden" name="MemberID" value="<%= memberid %>">
       <input type="hidden" name="eventid" value="<%= eventid %>">
-      <input type="hidden" name="SurveySubmissionDate" value="<%= new Date().toISOString() %>">
+      <input type="hidden" name="surveysubmissiondate" value="<%= new Date().toISOString() %>">
 
       <!-- Survey inputs (1-5) -->
       <div class="mb-3">
-        <label for="SurveySatisfactionScore" class="form-label">Satisfaction (1-5)</label>
-        <input type="number" class="form-control" id="SurveySatisfactionScore" name="SurveySatisfactionScore" min="1" max="5" required>
+        <label for="surveysatisfactionscore" class="form-label">Satisfaction (1-5)</label>
+        <input type="number" class="form-control" id="surveysatisfactionscore" name="surveysatisfactionscore" min="1" max="5" required>
       </div>
 
       <div class="mb-3">
-        <label for="SurveyUsefulnessScore" class="form-label">Usefulness (1-5)</label>
-        <input type="number" class="form-control" id="SurveyUsefulnessScore" name="SurveyUsefulnessScore" min="1" max="5" required>
+        <label for="surveyusefulnessscore" class="form-label">Usefulness (1-5)</label>
+        <input type="number" class="form-control" id="surveyusefulnessscore" name="surveyusefulnessscore" min="1" max="5" required>
       </div>
 
       <div class="mb-3">
-        <label for="SurveyInstructorScore" class="form-label">Instructor (1-5)</label>
-        <input type="number" class="form-control" id="SurveyInstructorScore" name="SurveyInstructorScore" min="1" max="5" required>
+        <label for="surveyinstructorscore" class="form-label">Instructor (1-5)</label>
+        <input type="number" class="form-control" id="surveyinstructorscore" name="surveyinstructorscore" min="1" max="5" required>
       </div>
 
       <div class="mb-3">
-        <label for="SurveyRecommendationScore" class="form-label">Recommendation (1-5)</label>
-        <input type="number" class="form-control" id="SurveyRecommendationScore" name="SurveyRecommendationScore" min="1" max="5" required>
+        <label for="surveyrecommendationscore" class="form-label">Recommendation (1-5)</label>
+        <input type="number" class="form-control" id="surveyrecommendationscore" name="surveyrecommendationscore" min="1" max="5" required>
       </div>
 
       <div class="mb-3">
-        <label for="SurveyComments" class="form-label">Comments (optional)</label>
-        <textarea class="form-control" id="SurveyComments" name="SurveyComments" maxlength="1000" rows="4"></textarea>
+        <label for="surveycomments" class="form-label">Comments (optional)</label>
+        <textarea class="form-control" id="surveycomments" name="surveycomments" maxlength="1000" rows="4"></textarea>
       </div>
 
       <!-- Hidden overall score calculated on submission -->
-      <input type="hidden" name="SurveyOverallScore" id="SurveyOverallScore">
+      <input type="hidden" name="surveyoverallscore" id="surveyoverallscore">
 
       <button type="submit" class="btn btn-primary">Submit Survey</button>
     </form>
   </div>
 
   <script>
-    // Calculate SurveyOverallScore as average before form submission
+    // Calculate surveyoverallscore as average before form submission
     const form = document.querySelector('form');
     form.addEventListener('submit', (e) => {
       const scores = [
-        parseInt(document.getElementById('SurveySatisfactionScore').value),
-        parseInt(document.getElementById('SurveyUsefulnessScore').value),
-        parseInt(document.getElementById('SurveyInstructorScore').value),
-        parseInt(document.getElementById('SurveyRecommendationScore').value)
+        parseInt(document.getElementById('surveysatisfactionscore').value),
+        parseInt(document.getElementById('surveyusefulnessscore').value),
+        parseInt(document.getElementById('surveyinstructorscore').value),
+        parseInt(document.getElementById('surveyrecommendationscore').value)
       ];
       const avg = scores.reduce((a,b)=>a+b,0) / scores.length;
-      document.getElementById('SurveyOverallScore').value = avg.toFixed(2);
+      document.getElementById('surveyoverallscore').value = avg.toFixed(2);
     });
   </script>
 </body>
