@@ -737,14 +737,12 @@ app.post("/deleteDonation/:id", (req, res) => {
     })
 });
 
-// GET: Admin view all surveys for a specific event
+// GET: Admin view all surveys (optionally by event)
 app.get("/surveys", requireRole("admin"), async (req, res) => {
   const eventid = req.query.eventid;
 
-  if (!eventid) return res.status(400).send("Event ID required");
-
   try {
-    const surveys = await knex("surveys as s")
+    let query = knex("surveys as s")
       .join("participantevent as pe", "s.peid", "pe.peid")
       .join("members as m", "pe.memberid", "m.memberid")
       .join("events as e", "pe.eventid", "e.eventid")
@@ -755,14 +753,18 @@ app.get("/surveys", requireRole("admin"), async (req, res) => {
         "m.memberlastname",
         "s.surveyoverallscore",
         "s.surveysubmissiondate",
-        "t.eventname"
-      )
-      .where("pe.eventid", eventid);
+        "t.eventname",
+        "pe.eventid"
+      );
+
+    if (eventid) query = query.where("pe.eventid", eventid);
+
+    const surveys = await query;
 
     res.render("surveys/surveys", {
-      title: "Event Surveys",
+      title: eventid ? "Event Surveys" : "All Surveys",
       surveys,
-      eventid
+      eventid: eventid || null
     });
   } catch (err) {
     console.error(err);
