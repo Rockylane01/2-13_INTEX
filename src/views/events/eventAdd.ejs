@@ -31,7 +31,7 @@
                 <form action="/addEvent" method="POST">
 
                     <label for="eventtemplate" class="form-label">Event Template</label>
-                    <select name="eventtemplate" id="eventtemplate">
+                    <select name="eventtemplate" id="eventtemplate" class="form-select mb-3" required aria-label="Event Template select">
                         <option value="1">AI for Beginners Bootcamp</option>
                         <option value="2">Community STEM Hackathon</option>
                         <option value="3">Data Science Study Group</option>
@@ -49,17 +49,29 @@
                         <option value="16">Women in Tech & Art Showcase</option>
                     </select>
 
-                    <label for=""></label>
-                    <input type="text" class="form-control mb-3" name="" id="" placeholder="Event Name" required />
+                    <!-- eventdatetimestart -->
+                    <label for="eventdatetimestart" class="form-label">Event Start</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventdatetimestart" id="eventdatetimestart" placeholder="Event Start Time" required />
 
+                    <!-- eventdatetimeend -->
+                    <label for="eventdatetimeend" class="form-label">Event End</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventdatetimeend" id="eventdatetimeend" placeholder="Event End Time" required />
 
-
-
+                    <!-- eventlocation -->
+                    <label for="eventlocation" class="form-label">Event Location</label>
+                    <input type="text" class="form-control mb-3" name="eventlocation" id="eventlocation" placeholder="Event Location" required />
+                     
+                    <!-- eventcapacity -->
+                    <label for="eventcapacity" class="form-label">Event Capacity</label>
+                    <input type="number" class="form-control mb-3" name="eventcapacity" id="eventcapacity" placeholder="Event Capacity" required />
+                     
+                    <!-- eventregistrationdeadline -->
+                    <label for="eventregistrationdeadline" class="form-label">Registration Deadline</label>
+                    <input type="datetime-local" class="form-control mb-3" name="eventregistrationdeadline" id="eventregistrationdeadline" placeholder="Event Registration Deadline" required />
 
                     <div>
                         <button type="submit" class="btn btn-primary">Save Event</button>
                     </div>
-                    
                 </form>
             </div>
         </div>
