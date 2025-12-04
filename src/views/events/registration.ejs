@@ -9,42 +9,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title><%= title %></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Ella Rises</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <h1><%= event.eventname %></h1>
-  <p><strong>Type:</strong> <%= event.eventtype %></p>
-  <p><strong>Description:</strong> <%= event.eventdescription %></p>
-  <p><strong>Recurrence Pattern:</strong> <%= event.eventrecurrencepattern %></p>
-  <p><strong>Start:</strong> <%= event.eventdatetimestart.toLocaleString() %></p>
-  <p><strong>End:</strong> <%= event.eventdatetimend.toLocaleString() %></p>
-  <p><strong>Location:</strong> <%= event.eventlocation %></p>
-  <p><strong>Capacity:</strong> <%= event.eventcapacity %></p>
-  <p><strong>Registration Deadline:</strong> <%= event.eventregistrationdeadline.toLocaleString() %></p>
+  <%- include('../../partials/header') %>
 
-  <div>
-    <% if (showRegisterBtn) { %>
-      <form action="/register/<%= event.eventid %>" method="POST">
-        <button type="submit">Register</button>
+  <div class="container mt-4">
+    <h2><%= event.eventname %></h2>
+    <p class="text-muted"><%= event.eventdescription %></p>
+    <p><strong>Date:</strong> <%= new Date(event.eventdatetimestart).toLocaleString() %> - <%= new Date(event.eventdatetimeend).toLocaleString() %></p>
+    <p><strong>Location:</strong> <%= event.eventlocation %></p>
+
+    <!-- Action Buttons -->
+    <div class="mb-3">
+      <% if (showRegisterBtn) { %>
+        <form action="/register/<%= event.eventid %>" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-success">Register</button>
+        </form>
+      <% } %>
+
+      <% if (showCancelBtn) { %>
+        <form action="/cancel/<%= event.eventid %>" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-warning">Cancel Registration</button>
+        </form>
+      <% } %>
+
+      <% if (showTakeSurvey) { %>
+        <a href="/surveyForm/<%= event.eventid %>" class="btn btn-primary">Take Survey</a>
+      <% } %>
+
+      <% if (surveySubmitted) { %>
+        <span class="text-success ms-2">Survey Submitted</span>
+      <% } %>
+
+      <% if (userRole === 'admin') { %>
+        <% // Show "End Event" only if any participant is signed up %>
+        <% const anySignedUp = participants.some(p => p.registrationstatus === 'signedup'); %>
+        <% if (anySignedUp && !eventEnded) { %>
+          <form method="POST" action="/endEvent/<%= event.eventid %>" class="d-inline"
+                onsubmit="return confirm('Are you sure you want to end this event? All signedup participants will be marked no-show.');">
+            <button type="submit" class="btn btn-danger ms-2">End Event</button>
+          </form>
+        <% } %>
+
+        <% // Show "View All Surveys" if any attended participants exist %>
+        <% const anyAttended = participants.some(p => p.registrationstatus === 'attended'); %>
+        <% if (anyAttended) { %>
+          <a href="/surveys?eventid=<%= event.eventid %>" class="btn btn-info ms-2">View All Surveys</a>
+        <% } %>
+      <% } %>
+    </div>
+
+
+    <% if (userRole === 'admin' && participants.some(p => p.registrationstatus === 'signedup')) { %>
+      <form method="POST" action="/endEvent/<%= event.eventid %>" 
+            onsubmit="return confirm('Are you sure you want to end this event? All signed-up participants will be marked as no-show.');"
+            class="mb-3">
+        <button type="submit" class="btn btn-danger">End Event</button>
       </form>
     <% } %>
 
-    <% if (showCancelBtn) { %>
-      <form action="/cancel-registration/<%= event.eventid %>" method="POST">
-        <button type="submit">Cancel Registration</button>
-      </form>
-    <% } %>
 
-    <% if (showTakeSurvey) { %>
-      <form action="/take-survey/<%= event.eventid %>" method="GET">
-        <button type="submit">Take Survey</button>
-      </form>
-    <% } %>
 
-    <% if (surveySubmitted) { %>
-      <p>Survey Submitted!</p>
+    <!-- Participants Table -->
+    <h4>Participants</h4>
+    <% if (participants && participants.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Status</th>
+              <th>Check-In Time</th>
+              <th>Registered At</th>
+              <% if (userRole === 'admin') { %>
+                <th>Actions</th>
+                <th>Survey</th>
+              <% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% participants
+                .sort((a, b) => {
+                  const statusOrder = { signedup: 1, attended: 2, cancelled: 3, 'no-show': 4 };
+                  if (statusOrder[a.registrationstatus] !== statusOrder[b.registrationstatus]) {
+                    return statusOrder[a.registrationstatus] - statusOrder[b.registrationstatus];
+                  }
+                  if (a.memberlastname !== b.memberlastname) {
+                    return a.memberlastname.localeCompare(b.memberlastname);
+                  }
+                  return a.memberfirstname.localeCompare(b.memberfirstname);
+                })
+                .forEach(p => { 
+                  const checkInText = p.registrationstatus === 'attended' ? 'Check Out' : 'Check In';
+                  const confirmMessage = p.registrationstatus !== 'signedup'
+                    ? `Are you sure you want to check in someone with the status of ${p.registrationstatus}?`
+                    : 'Proceed?';
+            %>
+              <tr>
+                <td><%= p.memberfirstname %></td>
+                <td><%= p.memberlastname %></td>
+                <td><%= p.registrationstatus %></td>
+                <td><%= p.registrationcheckintime ? new Date(p.registrationcheckintime).toLocaleString() : '-' %></td>
+                <td><%= p.registrationcreatedat ? new Date(p.registrationcreatedat).toLocaleString() : '-' %></td>
+
+                <% if (userRole === 'admin') { %>
+                  <td>
+                    <% if (!eventEnded) { %>
+                      <form method="POST" action="/checkin/<%= p.peid %>" onsubmit="return confirm('<%= confirmMessage %>');">
+                        <button type="submit" class="btn btn-sm btn-outline-success"><%= checkInText %></button>
+                      </form>
+                    <% } else { %>
+                      <span class="text-muted">Event Ended</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (p.registrationstatus === 'attended' && p.hasSurvey) { %>
+                      <a href="/surveys/<%= p.peid %>" class="btn btn-sm btn-outline-primary">View Survey</a>
+                    <% } else { %>
+                      <span>-</span>
+                    <% } %>
+                  </td>
+                <% } %>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-muted">No participants to display yet.</p>
     <% } %>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
