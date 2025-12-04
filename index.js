@@ -287,6 +287,68 @@ app.get("/registration/:eventId", async (req, res) => {
   }
 });
 
+app.post("/register/:eventId", requireRole("participant", "admin"), async (req, res) => {
+  const userID = req.session.userID;
+  const eventID = req.params.eventId;
+
+  if (!userID) return res.status(403).send("Not logged in");
+
+  try {
+    // 1. Insert into participantevent
+    const [peRow] = await knex("participantevent")
+      .insert({
+        MemberID: userID,
+        EventID: eventID
+      })
+      .returning("*"); // returns the inserted row including PEID
+
+    // 2. Insert into registration
+    await knex("registration").insert({
+      PEID: peRow.PEID,
+      RegistrationStatus: "signedup",
+      RegistrationCheckInTime: null,
+      RegistrationCreatedAt: new Date()
+    });
+
+    res.redirect(`/registration/${eventID}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error registering for event");
+  }
+});
+
+app.post("/cancel/:eventId", requireRole("participant", "admin"), async (req, res) => {
+  const userID = req.session.userID;
+  const eventID = req.params.eventId;
+
+  if (!userID) return res.status(403).send("Not logged in");
+
+  try {
+    // Find the participantevent row for this user and event
+    const peRow = await knex("participantevent")
+      .where({ MemberID: userID, EventID: eventID })
+      .first();
+
+    if (!peRow) {
+      return res.status(404).send("You are not registered for this event");
+    }
+
+    // Update registration status
+    await knex("registration")
+      .where({ PEID: peRow.PEID })
+      .update({
+        RegistrationStatus: "cancelled"
+      });
+
+    res.redirect(`/registration/${eventID}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error cancelling registration");
+  }
+});
+
+
+
 // Show empty form to add a new event (admin only)
 app.get("/eventEdit", requireRole("admin"), (req, res) => {
   // Render the same form, but with no pre-filled data
