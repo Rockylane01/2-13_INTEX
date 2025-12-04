@@ -12,13 +12,13 @@
 
   <form action="/donationform" method="POST">
     <div>
-      <label for="donorName">Name for donation:</label>
-      <input type="text" id="donorName" name="donorName" required>
+      <label for="donorname">Name for donation:</label>
+      <input type="text" id="donorname" name="donorname" required>
     </div>
 
     <div>
-      <label for="donationAmount">Donation Amount:</label>
-      <input type="number" id="donationAmount" name="donationAmount" step="0.01" required>
+      <label for="donationamount">Donation Amount:</label>
+      <input type="number" id="donationamount" name="donationamount" step="0.01" required>
     </div>
 
     <!-- Mock-up credit card fields (cosmetic only) -->
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Hidden field for memberID if logged in -->
-    <input type="hidden" name="memberID" value="<%= userID %>">
+    <input type="hidden" name="memberid" value="<%= userID %>">
 
     <button type="submit">Submit Donation</button>
   </form>

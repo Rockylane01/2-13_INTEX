@@ -1143,15 +1143,15 @@ app.get("/donationform", async (req, res) => {
 
 app.post("/donationform", async (req, res) => {
   try {
-    const { donorName, donationAmount, memberid } = req.body;
+    const { donorname, donationamount, memberid } = req.body;
 
     // Use NULL if guest
-    const memberidValue = memberid || null;
+    const memberidvalue = memberid || null;
 
     await knex("donations").insert({
-      memberid: memberidValue,
+      memberid: memberidvalue,
       donationdate: new Date(),
-      donationamount: donationAmount
+      donationamount: donationamount
     });
 
     res.send("Donation recorded. Thank you!"); // or redirect to a thank-you page
@@ -1162,8 +1162,8 @@ app.post("/donationform", async (req, res) => {
 });
 
 
-app.get("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
-  const donationId = req.params.donationId;
+app.get("/editdonation/:donationid", requireRole("admin"), async (req, res) => {
+  const donationid = req.params.donationid;
 
   try {
     const donation = await knex("donations")
@@ -1190,13 +1190,13 @@ app.get("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
 
 app.post("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
   const donationId = req.params.donationId;
-  const { donationAmount } = req.body;
+  const { donationamount } = req.body;
 
   try {
     await knex("donations")
       .where("donationid", donationId)
       .update({
-        donationamount: donationAmount
+        donationamount: donationamount
       });
 
     res.redirect("/donations");
