@@ -110,7 +110,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
+// Sign up
+app.get("/signUp", (req, res) => {
+  res.render("login/signUp", {title: "Sign Up"});
+});
 
 
 app.get("/logout", (req, res) => {
