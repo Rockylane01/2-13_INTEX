@@ -65,39 +65,39 @@
           </thead>
           <tbody>
             <% if (users && users.length > 0) { %>
-              <% users.forEach(user => { %>
+              <% users.forEach(u => { %>
                 <tr>
-                  <td><%= user.memberfirstname %></td>
-                  <td><%= user.memberlastname || 'N/A' %></td>
-                  <td><%= user.memberemail || 'N/A' %></td>
-                  <!-- View Profile (admins only) -->
-                    <% if (user && user.userRole === "admin") { %>
+                  <td><%= u.memberfirstname %></td>
+                  <td><%= u.memberlastname || 'N/A' %></td>
+                  <td><%= u.memberemail || 'N/A' %></td>
+                  <!-- View Profile -->
+                  <% if (user && user.userRole === "admin") { %>
                     <td>
-                      <form action="/user_profile/<%= user.memberid %>" method="GET">
+                      <form action="/user_profile/<%= u.memberid %>" method="GET">
                         <button class="btn btn-outline-primary btn-sm-pill" type="submit">View Profile</button>
                       </form>
                     </td>
                     <% } %>
-
-                  <!-- Edit (admins only) -->
+                    
+                    <!-- Edit -->
                     <% if (user && user.userRole === "admin") { %>
                     <td>
-                      <form action="/editUser/<%= user.memberid %>" method="GET">
+                      <form action="/editUser/<%= u.memberid %>" method="GET">
                         <button class="btn btn-outline-primary btn-sm-pill" type="submit">Edit</button>
                       </form>
                     </td>
                     <% } %>
-
-                  <!-- Delete (admins only) -->
+                    
+                    <!-- Delete -->
                     <% if (user && user.userRole === "admin") { %>
                     <td>
-                      <form action="/deleteUser/<%= user.memberid %>" 
-                        method="POST"
-                        onsubmit="return confirm('Are you sure you want to delete this user? This cannot be undone.');">
+                      <form action="/deleteUser/<%= u.memberid %>" 
+                            method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete this user? This cannot be undone.');">
                         <button class="btn btn-outline-primary btn-sm-pill" type="submit">Delete</button>
                       </form>
                     </td>
-                    <% } %>
+                    <% } %>  
                 </tr>
               <% }) %>
             <% } else { %>
