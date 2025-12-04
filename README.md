@@ -20,8 +20,6 @@ many
  - gotta add the teapot error
 
 
-to test - adding a survey
-CRUD on surveys? did I do that? I forgot
 pass in more back buttons and variables about event names and stuff across pages.
 
 
