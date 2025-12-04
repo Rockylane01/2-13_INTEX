@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
   if (req.session.user) {
     // Logged-in version of landing page
-    return res.render("landing/index-loggedin", {
+    return res.render("landing/index", {
       title: "Dashboard",
       user: req.session.user
     });
