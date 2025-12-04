@@ -40,9 +40,9 @@ app.use((req, res, next) => {
     return next();
   }
   // check if user is authenticated
-  if (!req.session.user) {
-     return res.redirect("/login");
-  }
+  // if (!req.session.user) {
+  //   return res.redirect("/login");
+  //}
   // set user in locals for views
   res.locals.user = req.session.user;
   next();
@@ -101,7 +101,7 @@ app.post("/login", async (req, res) => {
     if (!valid) {
       return res.status(400).send("Invalid credentials");
     }
-    
+
     req.session.user = { email };
 
     res.redirect("/");
