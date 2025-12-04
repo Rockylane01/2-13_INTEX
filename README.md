@@ -2,8 +2,6 @@
 INTEX code
 
 users.ejs
- - edit user functionality
- - search functionality
  - sort functionality? should be a quick add
 
 events.ejs
