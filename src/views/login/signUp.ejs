@@ -27,9 +27,57 @@
       <div id="login-header" class="page-header mb-3">
         <h1 class="page-title">Sign up</h1>
       </div>
+      <% if (typeof error_message !== "undefined" && error_message) { %>
+        <div class="alert alert-danger mt-2">
+          <%= error_message %>
+        </div>
+      <% } %>
+      
 
-      <!-- later you can change action="/login" method="POST" with real logic -->
+      <!-- SIGN UP FORM -->
       <form action="/signUp" method="POST">
+        <div class="mb-3">
+            <label for="memberfirstname" class="form-label">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="memberfirstname"
+              name="memberfirstname"
+              required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberlastname" class="form-label">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="memberlastname"
+              name="memberlastname"
+              required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberdob" class="form-label">Date of Birth</label>
+            <input
+              type="date"
+              class="form-control"
+              id="memberdob"
+              name="memberdob"
+              required>
+        </div>
+
+        <div class="mb-3">
+          <label for="memberphone" class="form-label">Phone Number</label>
+          <input
+            type="number"
+            class="form-control"
+            id="memberphone"
+            name="memberphone"
+            min="1000000000" 
+            max="9999999999"
+            required>
+        </div>
+
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
           <input
@@ -41,13 +89,63 @@
         </div>
 
         <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            name="password"
-            required>
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required>
+          </div>
+
+        <div class="mb-3">
+            <label for="membercity" class="form-label">City</label>
+            <input
+              type="text"
+              class="form-control"
+              id="membercity"
+              name="membercity"
+              required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberstate" class="form-label">State</label>
+            <input
+              type="text"
+              class="form-control"
+              id="memberstate"
+              name="memberstate"
+              required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberzip" class="form-label">Zipcode</label>
+            <input
+              type="text"
+              class="form-control"
+              id="memberzip"
+              name="memberzip"
+              required>
+        </div>
+
+        <div class="mb-3">
+            <label for="memberschooloremployer" class="form-label">School or Employer</label>
+            <input
+              type="text"
+              class="form-control"
+              id="memberschooloremployer"
+              name="memberschooloremployer"
+              required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="memberfieldofinterest" class="form-label">Field of Interest</label>
+            <select id="memberfieldofinterest" name="memberfieldofinterest" class="form-select" required>
+                <option value="">-- Select one --</option>   <!-- placeholder -->
+                <option value="STEM">STEM</option>
+                <option value="Arts">Arts</option>
+                <option value="Both">Both</option>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 mt-2">
@@ -55,9 +153,9 @@
         </button>
       </form>
       <p id="noAccount">Already registered? <a id="signUp" href="/login">Log in</a></p>
+    </div>
 
     </div>
-  </div>
 
   <!-- footer details ish -->
   <div>

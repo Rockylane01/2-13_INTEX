@@ -500,6 +500,7 @@
   /* ====== Login layout ====== */
   
   .login-wrapper {
+    margin-top: 3rem;
     min-height: 71vh;
     display: flex;
     align-items: center;

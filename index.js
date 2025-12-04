@@ -142,7 +142,7 @@ app.get("/signUp", (req, res) => {
 
 app.post("/signUp", async (req, res) => {
   try {
-    let { email, password } = req.body;
+    let {memberfirstname, memberlastname, memberdob, memberphone, email, password, membercity, memberstate, memberzip, memberschooloremployer, memberfieldofinterest} = req.body;
 
     // Make sure email and password fields are both filled out
     if (!email || !password) {
@@ -164,7 +164,7 @@ app.post("/signUp", async (req, res) => {
     if (existing) {
       return res.status(400).render("login/signUp", { 
         title: "Sign Up",
-        error_message: "An account with this email already exists." 
+        error_message: "An account with this email already exists. Please use a different email." 
       });
     }
 
@@ -178,10 +178,28 @@ app.post("/signUp", async (req, res) => {
       credpass: hashedPassword
     };
 
-    // Inserting new user info into the database
+    // Creating the new member object for the DB
+    const newMember = {
+      memberfirstname: memberfirstname, 
+      memberlastname: memberlastname, 
+      memberdob: memberdob, 
+      memberrole: "participant",
+      memberphone: memberphone, 
+      memberemail: email, 
+      membercity: membercity, 
+      memberstate: memberstate,
+      memberzip: memberzip, 
+      memberschooloremployer: memberschooloremployer, 
+      memberfieldofinterest: memberfieldofinterest
+    }
+
+    // Inserting new user info into the credentials table in database
     await knex("credentials").insert(newUser);
 
-    // 6️⃣ Auto-login the user OR redirect to login page
+    // Inserting user as new member into the members table in database
+    await knex("members").insert(newMember)
+
+    // Auto-login the user OR redirect to login page
     req.session.user = { email };   // logs them in automatically
 
     res.redirect("/");
