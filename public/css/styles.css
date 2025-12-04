@@ -96,6 +96,11 @@
   gap: 12px;
 }
 
+.logo-stuff {
+  height: 20px;
+  width: auto;
+}
+
 .nav-logo img {
   height: 102px;
 }
