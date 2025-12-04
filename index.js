@@ -891,6 +891,11 @@ app.get("/users", requireRole("admin"), (req, res) => {
 app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => {
   const memberid = req.params.id;
 
+  // participants can only view their own profile
+  if (req.session.user.userRole === "participant" && req.session.user.userID != memberid) {
+    return res.status(403).send("Access denied");
+  }
+
   knex.select('*')
     .from('members')
     .where('members.memberid', memberid)
@@ -911,6 +916,7 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
         });
     });
 });
+
   
 app.post("/deleteUser/:id", (req, res) => {
     knex("members").where("memberid", req.params.id).del().then(members => {
