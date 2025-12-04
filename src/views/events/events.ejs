@@ -25,9 +25,11 @@
                 </h2>
                 <p class="text-muted mb-0">Cultural programs and STEAM workshops empowering young women</p>
             </div>
-            <a href="/eventAdd" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus me-2"></i>Add New Event
-            </a>
+            <% if (userRole === "admin") { %>
+                <a href="/eventEdit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Add New Event
+                </a>
+            <% } %>
         </div>
 
         <div class="card">
@@ -47,11 +49,19 @@
                             <% if (events && events.length > 0) { %>
                                 <% events.forEach(event => { %>
                                     <tr>
-                                        <td><%= event.eventname %></td>
+                                        <td>
+                                            <a href="/registration/<%= event.eventid %>"><%= event.eventname %></a>
+                                        </td>
                                         <td><%= event.eventdatetimestart.toLocaleString() %></td>
                                         <td><%= event.eventlocation %></td>
-                                        <td><a href="/eventView/<%= event.eventid %>">View</a></td>
-                                        <td><a href="/editEvent/<%= event.eventid %>">Edit</a></td>
+                                        <td><a href="">View</a></td>
+                                        <td>
+                                            <% if (userRole === "admin") { %>
+                                                <a href="/eventEdit/<%= event.eventid %>" class="btn btn-outline-primary btn-sm-pill">
+                                                    Edit
+                                                </a>
+                                            <% } %>
+                                        </td>
                                     </tr>
                                 <% }) %>
                             <% } else { %>

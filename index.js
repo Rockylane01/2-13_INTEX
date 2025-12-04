@@ -33,6 +33,18 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
+function requireRole(...allowedRoles) {
+  return (req, res, next) => {
+    const user = req.session.user;
+    if (!user || !allowedRoles.includes(user.userRole)) {
+      return res.redirect("/");
+    }
+    next();
+  };
+}
+
+
 app.use((req, res, next) => {
   // allow login and logout routes without authentication
   if (req.path === '/login' || req.path === '/logout') {
@@ -86,6 +98,7 @@ app.post("/login", async (req, res) => {
     email = email.trim();
     password = password.trim();
 
+    // Check credentials table
     const user = await knex("credentials")
       .select("credpass")
       .where("credemail", email)
@@ -102,10 +115,22 @@ app.post("/login", async (req, res) => {
       return res.status(400).send("Invalid credentials");
     }
 
-    req.session.user = { email };
+    // Fetch member info
+    const member = await knex("members")
+      .select("memberid", "memberrole")
+      .where("memberemail", email)
+      .first();
+
+    // Store session
+    req.session.user = {
+      email,
+      userID: member ? member.memberid : null,
+      userRole: member && member.memberrole ? member.memberrole : "guest"
+    };
 
     res.redirect("/");
   } catch (err) {
+    console.error(err);
     res.status(500).send("Server error");
   }
 });
@@ -180,79 +205,495 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get("/events", (req, res) => {
-  knex.select(['eventid', 'eventtemplates.eventname', 'eventdatetimestart', 'eventlocation'])
-    .from('events')
-    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
-    .then(events => {
-      res.render('events/events', {
-        title: "Events",
-        active: "events",
-        events: events
-      })
+app.get("/events", requireRole("participant", "admin"), async (req, res) => {
+  try {
+    const events = await knex
+      .select([
+        'events.eventid',
+        'events.eventdatetimestart',
+        'events.eventdatetimeend',
+        'events.eventlocation',
+        'events.eventcapacity',
+        'events.eventregistrationdeadline',
+        'eventtemplates.eventname',
+        'eventtemplates.eventtype',
+        'eventtemplates.eventdescription',
+        'eventtemplates.eventrecurrencepattern'
+      ])
+      .from('events')
+      .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid');
+
+    res.render('events/events', {
+      title: "Events",
+      active: "events",
+      userRole: req.session.user.userRole,
+      events
     });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
 });
 
-app.get("/eventView/:id", (req, res) => {
-  const eventId = req.params.id;
 
-  // Get event details with template info
-  knex.select(
-    'events.*',
-    'eventtemplates.eventname',
-    'eventtemplates.eventtype',
-    'eventtemplates.eventdescription',
-    'eventtemplates.eventrecurrencepattern'
-  )
-    .from('events')
-    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
-    .where('events.eventid', eventId)
-    .first()
-    .then(event => {
-      if (!event) {
-        return res.status(404).send("Event not found");
-      }
+app.get("/registration/:eventid", async (req, res) => {
+  const userID = req.session.user.userID;
+  const userRole = req.session.user.userRole;
+  const eventid = req.params.eventid;
 
-      // Get participant count and details
-      knex.select(
-        'members.memberid',
-        'members.memberfirstname',
-        'members.memberlastname',
-        'members.memberemail',
-        'registration.registrationstatus',
-        'registration.registrationcheckintime'
+  if (!userID || !["participant", "admin"].includes(userRole))
+    return res.redirect("/");
+
+  try {
+    // Fetch event info
+    const event = await knex("events")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .select(
+        "events.*",
+        "eventtemplates.eventname",
+        "eventtemplates.eventtype",
+        "eventtemplates.eventdescription",
+        "eventtemplates.eventrecurrencepattern"
       )
-        .from('participantevent')
-        .join('members', 'participantevent.memberid', '=', 'members.memberid')
-        .join('registration', 'participantevent.peid', '=', 'registration.peid')
-        .where('participantevent.eventid', eventId)
-        .then(participants => {
-          const eventWithCount = {
-            ...event,
-            registeredcount: participants.length,
-            participants: participants
-          };
+      .where("events.eventid", eventid)
+      .first();
 
-          res.render("events/eventView", {
-            title: "Event Details",
-            active: "events",
-            event: eventWithCount,
-            participants: participants
-          });
-        });
-    })
-    .catch(err => {
-      console.error("Error fetching event:", err);
-      res.status(500).send("Server error");
+    if (!event) return res.redirect("/");
+
+    const now = new Date();
+    const eventEnded = now >= event.eventdatetimeend;
+
+    // Check if current user is registered
+    const perow = await knex("participantevent")
+      .where({ memberid: userID, eventid })
+      .first();
+
+    let registered = !!perow;
+    let showRegisterBtn = !registered && !eventEnded;
+    let showCancelBtn = registered && !eventEnded;
+
+    // Survey logic
+    let showTakeSurvey = false;
+    let surveySubmitted = false;
+
+    if (perow && eventEnded) {
+      const survey = await knex("surveys")
+        .where({ peid: perow.peid })
+        .first();
+
+      if (!survey && perow.registrationstatus === "attended") {
+        showTakeSurvey = true;
+        showRegisterBtn = false;
+        showCancelBtn = false;
+      } else if (survey) {
+        surveySubmitted = true;
+        showRegisterBtn = false;
+        showCancelBtn = false;
+      }
+    }
+
+    // Fetch participants
+    let participantsquery = knex("participantevent as pe")
+      .join("members", "pe.memberid", "=", "members.memberid")
+      .join("registration as r", "pe.peid", "=", "r.peid")
+      .leftJoin("surveys as s", "pe.peid", "=", "s.peid")
+      .select(
+        "members.memberfirstname",
+        "members.memberlastname",
+        "r.registrationstatus",
+        "r.registrationcheckintime",
+        "r.registrationcreatedat",
+        "pe.peid",
+        knex.raw("CASE WHEN s.peid IS NOT NULL THEN true ELSE false END AS hasSurvey")
+      )
+      .where("pe.eventid", eventid);
+
+    // Non-admin filter
+    if (userRole !== "admin") {
+      if (!eventEnded) {
+        participantsquery.andWhere("r.registrationstatus", "signedup");
+      } else {
+        participantsquery.andWhere("r.registrationstatus", "attended");
+      }
+    }
+
+    const participants = await participantsquery.orderByRaw(`
+      CASE 
+        WHEN r.registrationstatus='signedup' THEN 1
+        WHEN r.registrationstatus='attended' THEN 2
+        WHEN r.registrationstatus='cancelled' THEN 3
+        WHEN r.registrationstatus='no-show' THEN 4
+        ELSE 5
+      END,
+      members.memberlastname,
+      members.memberfirstname
+    `);
+
+    console.log(event.eventdatetimeend, typeof event.eventdatetimeend);
+    console.log(participants.map(p => ({ checkin: p.registrationcheckintime, created: p.registrationcreatedat })));
+
+
+    res.render("events/registration", {
+      title: "Registration",
+      event,
+      registered,
+      eventEnded,
+      showRegisterBtn,
+      showCancelBtn,
+      showTakeSurvey,
+      surveySubmitted,
+      participants,
+      userRole: req.session.user.userRole
     });
+
+  } catch (err) {
+    console.error(err);
+    res.redirect("/");
+  }
 });
 
-// Render event creation form
-app.get("/eventAdd", (req, res) => {
-  res.render('events/eventAdd', {
-    title: "Edit Event",
-    active: "events"
+
+app.post("/cancel/:eventid", requireRole("participant", "admin"), async (req, res) => {
+  const userID = req.session.user.userID;
+  const eventid = req.params.eventid;
+
+  if (!userID) return res.status(403).send("Not logged in");
+
+  try {
+    // Find the participantevent row for this user and event
+    const peRow = await knex("participantevent")
+      .where({ memberid: userID, eventid: eventid })
+      .first();
+
+    if (!peRow) {
+      return res.status(404).send("You are not registered for this event");
+    }
+
+    // Update registration status
+    await knex("registration")
+      .where({ peid: peRow.peid })
+      .update({
+        registrationstatus: "cancelled"
+      });
+
+    res.redirect(`/registration/${eventid}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error cancelling registration");
+  }
+});
+
+app.post("/register/:eventid", requireRole("participant", "admin"), async (req, res) => {
+  const userID = req.session.user.userID;
+  const eventid = req.params.eventid;
+
+  if (!userID) return res.status(403).send("Not logged in");
+
+  try {
+    // participantevent insert
+    const [perow] = await knex("participantevent")
+      .insert({
+        memberid: userID,
+        eventid: eventid
+      })
+      .returning("*");
+
+    // registration insert
+    await knex("registration").insert({
+      peid: perow.peid,
+      registrationstatus: "signedup",
+      registrationcheckintime: null,
+      registrationcreatedat: new Date()
+    });
+
+    res.redirect(`/registration/${eventid}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error registering for event");
+  }
+});
+
+
+// POST: Check In / Check Out a participant (admin only)
+app.post("/checkin/:peid", requireRole("admin"), async (req, res) => {
+  const peid = req.params.peid;
+
+  try {
+    // Fetch current registration
+    const reg = await knex("registration")
+      .where({ peid: peid })
+      .first();
+
+    if (!reg) return res.status(404).send("Registration not found");
+
+    let newStatus;
+    let checkInTime = null;
+
+    if (reg.registrationstatus === "attended") {
+      // Check out → set status to "cancelled" and remove check-in time
+      newStatus = "cancelled";
+    } else {
+      // Check in → set status to "attended" and add timestamp
+      newStatus = "attended";
+      checkInTime = new Date();
+    }
+
+    await knex("registration")
+      .where({ peid: peid })
+      .update({
+        registrationstatus: newStatus,
+        registrationcheckintime: checkInTime
+      });
+
+    // Redirect back to the registration page
+    const peRow = await knex("participantevent").where({ peid: peid }).first();
+    res.redirect(`/registration/${peRow.eventid}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error updating check-in status");
+  }
+});
+
+// POST: End Event (mark all signed-up participants as no-show)
+app.post("/endEvent/:eventid", requireRole("admin"), async (req, res) => {
+  const eventid = req.params.eventid;
+
+  try {
+    // Update all signed-up registrations for this event to "no-show"
+    const peids = await knex("participantevent")
+      .where({ eventid: eventid })
+      .pluck("peid");
+
+    await knex("registration")
+      .whereIn("peid", peids)
+      .andWhere({ registrationstatus: "signedup" })
+      .update({
+        registrationstatus: "no-show"
+      });
+
+    res.redirect(`/registration/${eventid}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error ending event");
+  }
+});
+
+// GET: Display Survey Form for a user and event
+app.get("/surveyForm/:eventid", requireRole("participant", "admin"), async (req, res) => {
+  const userID = req.session.user.userID;
+  const eventid = req.params.eventid;
+
+  if (!userID) return res.status(403).send("Not logged in");
+
+  try {
+    // 1. Verify that user is registered for the event
+    const peRow = await knex("participantevent")
+      .join("registration", "participantevent.peid", "=", "registration.peid")
+      .join("events", "participantevent.eventid", "=", "events.eventid")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .select(
+        "participantevent.peid",
+        "events.eventid",
+        "events.eventdatetimestart",
+        "events.eventdatetimeend",
+        "events.eventlocation",
+        "eventtemplates.eventname",
+        "eventtemplates.eventdescription"
+      )
+      .where({
+        "participantevent.memberid": userID,
+        "participantevent.eventid": eventid
+      })
+      .first();
+
+    if (!peRow) return res.status(403).send("Not registered for this event");
+
+    // 2. Check if event has ended
+    const now = new Date();
+    if (now < new Date(peRow.eventdatetimeend)) {
+      return res.status(403).send("Event has not ended yet");
+    }
+
+    // 3. Render survey form with hidden user & event fields
+    res.render("surveys/surveyForm", {
+      title: `Survey - ${peRow.eventname}`,
+      peid: peRow.peid,
+      memberid: userID,
+      eventid: eventid,
+      eventname: peRow.eventname,
+      eventdescription: peRow.eventdescription,
+      eventlocation: peRow.eventlocation,
+      eventstart: peRow.eventdatetimestart,
+      eventend: peRow.eventdatetimeend
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading survey form");
+  }
+});
+
+
+// POST: Submit survey
+app.post("/submitSurvey", requireRole("participant", "admin"), async (req, res) => {
+  const { peid, memberid, eventid, surveysatisfactionscore, surveyusefulnessscore, surveyinstructorscore, surveyrecommendationscore, surveycomments, surveyoverallscore, surveysubmissiondate } = req.body;
+  const userID = req.session.user.userID;
+
+  try {
+    // 1. Verify user is allowed to submit: must match session user and registration must exist
+    const reg = await knex("registration as r")
+      .join("participantevent as pe", "r.peid", "pe.peid")
+      .join("events as e", "pe.eventid", "e.eventid")
+      .where({
+        "pe.peid": peid,
+        "pe.memberid": userID,
+        "pe.eventid": eventid
+      })
+      .first();
+
+    if (!reg) return res.status(403).send("You are not authorized to submit this survey.");
+
+    // 2. Ensure event has ended
+    const now = new Date();
+    if (now < new Date(reg.eventdatetimeend)) {
+      return res.status(403).send("Event has not ended yet.");
+    }
+
+    // 3. Calculate overall score if missing
+    let overallScore = surveyoverallscore;
+    if (!overallScore) {
+      const scores = [surveysatisfactionscore, surveyusefulnessscore, surveyinstructorscore, surveyrecommendationscore].map(Number);
+      overallScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+    }
+
+    // 4. Insert into surveys
+    await knex("surveys").insert({
+      peid,
+      surveysatisfactionscore: Number(surveysatisfactionscore),
+      surveyusefulnessscore: Number(surveyusefulnessscore),
+      surveyinstructorscore: Number(surveyinstructorscore),
+      surveyrecommendationscore: Number(surveyrecommendationscore),
+      surveyoverallscore: parseFloat(overallScore.toFixed(2)),
+      surveycomments: surveycomments || null,
+      surveysubmissiondate: surveysubmissiondate ? new Date(surveysubmissiondate) : new Date()
+    });
+
+    res.redirect(`/registration/${eventid}?surveySubmitted=1`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error submitting survey");
+  }
+});
+
+// Show empty form to add a new event (admin only)
+app.get("/eventEdit", requireRole("admin"), (req, res) => {
+  // Render the same form, but with no pre-filled data
+  res.render("eventEdit", {
+    title: "Add New Event",
+    event: {
+      eventid: null,
+      eventname: "",
+      eventtype: "",
+      eventdescription: "",
+      eventrecurrencepattern: "",
+      eventdatetimestart: "",
+      eventdatetimeend: "",
+      eventlocation: "",
+      eventcapacity: "",
+      eventregistrationdeadline: ""
+    }
   });
+});
+
+
+app.get("/eventEdit/:eventid", requireRole("admin"), async (req, res) => {
+  const eventid = req.params.eventid;
+
+  try {
+    const event = await knex("events")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .select(
+        "events.*",
+        "eventtemplates.eventname",
+        "eventtemplates.eventtype",
+        "eventtemplates.eventdescription",
+        "eventtemplates.eventrecurrencepattern"
+      )
+      .where("events.eventid", eventid)
+      .first();
+
+    if (!event) return res.redirect("/events");
+
+    res.render("eventEdit", {
+      title: "Edit Event",
+      event
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/events");
+  }
+});
+
+app.post("/eventEdit", requireRole("admin"), async (req, res) => {
+  const {
+    eventid,
+    eventname,
+    eventtype,
+    eventdescription,
+    eventrecurrence,
+    eventstart,
+    eventend,
+    eventlocation,
+    eventcapacity,
+    registrationdeadline
+  } = req.body;
+
+  try {
+    if (eventid) {
+      // UPDATE existing event
+      await knex("events")
+        .where({ eventid: eventid })
+        .update({
+          eventdatetimestart: new Date(eventstart),
+          eventdatetimeend: new Date(eventend),
+          eventlocation: eventlocation,
+          eventcapacity: eventcapacity,
+          eventregistrationdeadline: new Date(registrationdeadline)
+        });
+
+      await knex("eventtemplates")
+        .where({ templateid: (await knex("events").select("templateid").where({ eventid: eventid }).first()).templateid })
+        .update({
+          eventname: eventname,
+          eventtype: eventtype,
+          eventdescription: eventdescription,
+          eventrecurrencePattern: eventrecurrence
+        });
+    } else {
+      // INSERT new event
+      const [templateid] = await knex("eventtemplates")
+        .insert({
+          eventname: eventname,
+          eventtype: eventtype,
+          eventdescription: eventdescription,
+          eventrecurrencePattern: eventrecurrence
+        })
+        .returning("templateid");
+
+      await knex("events").insert({
+        templateid: templateid,
+        eventdatetimestart: new Date(eventstart),
+        eventdatetimeend: new Date(eventend),
+        eventlocation: eventlocation,
+        eventcapacity: eventcapacity,
+        eventregistrationdeadline: new Date(registrationdeadline)
+      });
+    }
+
+    res.redirect("/events");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving event");
+  }
 });
 
 app.post("/deleteEvent/:id", (req, res) => {
@@ -277,90 +718,14 @@ app.get("/donations", (req, res) => {
           title: "Donations",
           active: "donations",
           donations: donations,
-          totalAmount: totalAmount
+          totalAmount: totalAmount,
+          userRole: req.session.user.userRole
         });
 
       });
     })
 
 
-});
-
-app.get("/donationView/:id", (req, res) => {
-  const donationId = req.params.id;
-
-  // Get donation details with member info
-  knex.select(
-    'donations.*',
-    'members.memberfirstname',
-    'members.memberlastname',
-    'members.memberemail',
-    'members.memberphone',
-    'members.membercity',
-    'members.memberstate',
-    'members.memberrole'
-  )
-    .from('donations')
-    .join('members', 'donations.memberid', '=', 'members.memberid')
-    .where('donations.donationid', donationId)
-    .first()
-    .then(donation => {
-      if (!donation) {
-        return res.status(404).send("Donation not found");
-      }
-
-      const memberId = donation.memberid;
-
-      if (!memberId) {
-        console.error('No memberId found for donation:', donationId);
-        return res.status(500).send("Invalid donation data - no member ID");
-      }
-
-      console.log('Fetching donor summary for memberId:', memberId);
-
-      // Get all donations for this member first
-      knex('donations')
-        .where('memberid', memberId)
-        .then(allDonations => {
-          console.log('All donations for member:', allDonations);
-
-          // Calculate summary manually
-          const totalDonations = allDonations.length;
-          const totalAmount = allDonations.reduce((sum, d) => sum + parseFloat(d.donationamount || 0), 0);
-          const averageDonation = totalDonations > 0 ? totalAmount / totalDonations : 0;
-
-          const dates = allDonations.map(d => new Date(d.donationdate)).filter(d => !isNaN(d));
-          const firstDonation = dates.length > 0 ? new Date(Math.min(...dates)) : null;
-          const lastDonation = dates.length > 0 ? new Date(Math.max(...dates)) : null;
-
-          const donorSummary = {
-            totalDonations,
-            totalAmount,
-            averageDonation,
-            firstDonation,
-            lastDonation
-          };
-
-          console.log('Calculated donor summary:', donorSummary);
-
-          // Filter out the current donation from other donations
-          const otherDonations = allDonations
-            .filter(d => d.donationid !== parseInt(donationId))
-            .sort((a, b) => new Date(b.donationdate) - new Date(a.donationdate));
-
-          res.render("donations/donationView", {
-            title: "Donation Details",
-            active: "donations",
-            donation: donation,
-            donorSummary: donorSummary,
-            otherDonations: otherDonations
-          });
-        });
-    })
-    .catch(err => {
-      console.error("Error fetching donation:", err);
-      res.status(500).send("Server error");
-    });
 });
 
 app.post("/deleteDonation/:id", (req, res) => {
@@ -372,58 +737,73 @@ app.post("/deleteDonation/:id", (req, res) => {
     })
 });
 
-app.get("/surveys", (req, res) => {
-  knex.select('participantevent.peid', 'members.memberfirstname', 'members.memberlastname', 'eventtemplates.eventname', 'surveys.surveyoverallscore')
-    .from('participantevent')
-    .join('members', 'participantevent.memberid', '=', 'members.memberid')
-    .join('events', 'participantevent.eventid', '=', 'events.eventid')
-    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
-    .join('surveys', 'participantevent.peid', '=', 'surveys.peid')
-    .then(surveys => {
-      res.render("surveys/surveys", {
-        title: "Surveys",
-        active: "surveys",
-        surveys: surveys
-      });
+// GET: Admin view all surveys for a specific event
+app.get("/surveys", requireRole("admin"), async (req, res) => {
+  const eventid = req.query.eventid;
+
+  if (!eventid) return res.status(400).send("Event ID required");
+
+  try {
+    const surveys = await knex("surveys as s")
+      .join("participantevent as pe", "s.peid", "pe.peid")
+      .join("members as m", "pe.memberid", "m.memberid")
+      .join("events as e", "pe.eventid", "e.eventid")
+      .join("eventtemplates as t", "e.templateid", "t.templateid")
+      .select(
+        "s.peid",
+        "m.memberfirstname",
+        "m.memberlastname",
+        "s.surveyoverallscore",
+        "s.surveysubmissiondate",
+        "t.eventname"
+      )
+      .where("pe.eventid", eventid);
+
+    res.render("surveys/surveys", {
+      title: "Event Surveys",
+      surveys,
+      eventid
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching surveys");
+  }
 });
 
-app.get("/surveyView/:id", (req, res) => {
-  const peid = req.params.id;
+// GET: Admin view a single survey
+app.get("/surveys/:peid", requireRole("admin"), async (req, res) => {
+  const peid = req.params.peid;
 
-  knex.select(
-    'surveys.*',
-    'members.memberfirstname',
-    'members.memberlastname',
-    'members.memberemail',
-    'eventtemplates.eventname',
-    'events.eventdatetimestart',
-    'npsbucketlookup.surveynpsbucket'
-  )
-    .from('surveys')
-    .join('participantevent', 'surveys.peid', '=', 'participantevent.peid')
-    .join('members', 'participantevent.memberid', '=', 'members.memberid')
-    .join('events', 'participantevent.eventid', '=', 'events.eventid')
-    .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid')
-    .leftJoin('npsbucketlookup', 'surveys.surveyrecommendationscore', '=', 'npsbucketlookup.surveyrecommendationscore')
-    .where('surveys.peid', peid)
-    .first()
-    .then(survey => {
-      if (!survey) {
-        return res.status(404).send("Survey not found");
-      }
+  try {
+    const survey = await knex("surveys as s")
+      .join("participantevent as pe", "s.peid", "pe.peid")
+      .join("members as m", "pe.memberid", "m.memberid")
+      .join("events as e", "pe.eventid", "e.eventid")
+      .join("eventtemplates as t", "e.templateid", "t.templateid")
+      .select(
+        "s.*",
+        "m.memberfirstname",
+        "m.memberlastname",
+        "t.eventname",
+        "pe.eventid"
+      )
+      .where("s.peid", peid)
+      .first();
 
-      res.render("surveys/surveyView", {
-        title: "Survey Response",
-        active: "surveys",
-        survey: survey
-      });
-    })
-    .catch(err => {
-      console.error("Error fetching survey:", err);
-      res.status(500).send("Server error");
+    if (!survey) return res.status(404).send("Survey not found");
+
+    res.render("surveys/individualSurvey", {
+      title: "Survey Detail",
+      eventid: survey.eventid,
+      survey
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching survey");
+  }
 });
+
+
 
 app.post("/deleteSurvey/:id", (req, res) => {
     knex("surveys").where("peid", req.params.id).del().then(sruveys => {
@@ -447,6 +827,44 @@ app.get("/milestones", (req, res) => {
     });
 });
 
+app.get("/milestoneEdit/:id", async (req, res) => {
+  const { user } = req.session;
+
+  // Must be logged in at least
+  if (!user) return res.redirect("/");
+
+  const milestoneId = req.params.id;
+
+  // Fetch the milestone to see who owns it
+  const milestone = await knex("milestones")
+    .select("memberid", "milestonetitle", "milestonedate")
+    .where("milestoneid", milestoneId)
+    .first();
+
+  if (!milestone) {
+    return res.status(404).send("Milestone not found");
+  }
+
+  // Admins can edit any milestone
+  const isAdmin = user.userRole === "admin";
+
+  // Participant can edit *only their own* milestone
+  const isOwner =
+    user.userRole === "participant" &&
+    milestone.memberid === user.userID;
+
+  if (!isAdmin && !isOwner) {
+    return res.redirect("/");
+  }
+
+  // Render the edit page
+  res.render("milestones/milestoneEdit", {
+    title: "Edit Milestone",
+    active: "milestones",
+    milestone
+  });
+});
+
 app.post("/deleteMilestone/:id/:title", (req, res) => {
     knex("milestones").where({memberid: req.params.id, milestonetitle: title}).del().then(milestones => {
         res.redirect("/milestones");
@@ -456,18 +874,42 @@ app.post("/deleteMilestone/:id/:title", (req, res) => {
     })
 });
 
-app.get("/users", (req, res) => {
+app.get("/users", requireRole("admin"), (req, res) => {
   knex.select(['memberid', 'memberfirstname', 'memberlastname', 'memberemail'])
-  .from('members')
-  .then(users => {
-    res.render("users/users", {
-      title: "Users",
-      active: "users",
-      users: users
+    .from('members')
+    .then(users => {
+      res.render("users/users", {
+        title: "Users",
+        active: "users",
+        users
+      });
     });
-  });
 });
 
+app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => {
+  const memberid = req.params.id;
+
+  knex.select('*')
+    .from('members')
+    .where('members.memberid', memberid)
+    .first()
+    .then(user => {
+      if (!user) return res.status(404).send("User not found");
+
+      knex.select(['milestonetitle', 'milestonedate'])
+        .from('milestones')
+        .where('milestones.memberid', memberid)
+        .then(milestones => {
+          res.render("users/user_profile", {
+            title: "User Profile",
+            active: "users",
+            user,
+            milestones
+          });
+        });
+    });
+});
+  
 app.post("/deleteUser/:id", (req, res) => {
     knex("members").where("memberid", req.params.id).del().then(members => {
         res.redirect("/users");
@@ -477,33 +919,89 @@ app.post("/deleteUser/:id", (req, res) => {
     })
 });
 
-app.get("/user_profile/:id", (req, res) => {
-  const memberId = req.params.id;
+app.get("/donationform", async (req, res) => {
+  const userID = req.session.user.userID || null;
 
-  // Fetch user data and their completed milestones
-  knex.select('*')
-    .from('members')
-    .where('members.memberid', memberId)
-    .first()
-    .then(user => {
-      if (!user) {
-        return res.status(404).send("User not found");
-      }
-
-      // Fetch milestones for this user
-      knex.select(['milestonetitle', 'milestonedate'])
-        .from('milestones')
-        .where('milestones.memberid', memberId)
-        .then(milestones => {
-          res.render("users/user_profile", {
-            title: "User Profile",
-            active: "users",
-            user: user,
-            milestones: milestones
-          });
-        });
-    });
+  res.render("donations/donationform", {
+    title: "Make a Donation",
+    userID
+  });
 });
+
+app.post("/donationform", async (req, res) => {
+  try {
+    const { donorName, donationAmount, memberid } = req.body;
+
+    // Use NULL if guest
+    const memberidValue = memberid || null;
+
+    await knex("donations").insert({
+      memberid: memberidValue,
+      donationdate: new Date(),
+      donationamount: donationAmount
+    });
+
+    res.send("Donation recorded. Thank you!"); // or redirect to a thank-you page
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error recording donation");
+  }
+});
+
+
+app.get("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
+  const donationId = req.params.donationId;
+
+  try {
+    const donation = await knex("donations")
+      .join("members", "donations.memberid", "=", "members.memberid")
+      .select(
+        "donations.*",
+        "members.memberfirstname",
+        "members.memberlastname"
+      )
+      .where("donationid", donationId)
+      .first();
+
+    if (!donation) return res.redirect("/donations");
+
+    res.render("editdonation", {
+      title: "Edit Donation",
+      donation
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/donations");
+  }
+});
+
+app.post("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
+  const donationId = req.params.donationId;
+  const { donationAmount } = req.body;
+
+  try {
+    await knex("donations")
+      .where("donationid", donationId)
+      .update({
+        donationamount: donationAmount
+      });
+
+    res.redirect("/donations");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/donations");
+  }
+});
+
+
+app.get("/admin", requireRole("admin"), (req, res) => {
+  res.render("admin/admin", {
+    title: "Admin Dashboard",
+    user: req.session.user
+  });
+});
+
+
 
 // Start server
 app.listen(PORT, () => {

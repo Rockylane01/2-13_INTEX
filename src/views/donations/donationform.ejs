@@ -1,2 +1,44 @@
 <!-- This page should be visible to guests. -->
 <!-- This page will have a mock-up donation form. No need to verify payment info for this build. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+</head>
+<body>
+  <h1>Make a Donation</h1>
+
+  <form action="/donationform" method="POST">
+    <div>
+      <label for="donorName">Name for donation:</label>
+      <input type="text" id="donorName" name="donorName" required>
+    </div>
+
+    <div>
+      <label for="donationAmount">Donation Amount:</label>
+      <input type="number" id="donationAmount" name="donationAmount" step="0.01" required>
+    </div>
+
+    <!-- Mock-up credit card fields (cosmetic only) -->
+    <div>
+      <label>Card Number:</label>
+      <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+    </div>
+    <div>
+      <label>Expiration Date:</label>
+      <input type="text" placeholder="MM/YY">
+    </div>
+    <div>
+      <label>CVC:</label>
+      <input type="text" placeholder="CVC">
+    </div>
+
+    <!-- Hidden field for memberID if logged in -->
+    <input type="hidden" name="memberID" value="<%= userID %>">
+
+    <button type="submit">Submit Donation</button>
+  </form>
+</body>
+</html>
