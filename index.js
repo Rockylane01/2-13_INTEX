@@ -836,64 +836,121 @@ app.post("/deleteSurvey/:id", async (req, res) => {
 
 
 app.get("/milestones", (req, res) => {
-  knex.select(['milestones.memberid', 'milestonetitle', 'milestonedate', 'memberfirstname', 'memberlastname'])
+  knex.select(['milestones.memberid', 'milestonetitle', 'milestones.memberid', 'milestonedate', 'memberfirstname', 'memberlastname'])
     .from('milestones')
     .join('members', 'milestones.memberid', '=', 'members.memberid')
     .then(milestones => {
       res.render("milestones/milestones", {
         title: "Milestones",
         active: "milestones",
-        milestones: milestones
+        milestones: milestones,
+        userRole: req.session.user.userRole,
+        userID: req.session.user.userID
       });
     });
 });
 
-app.get("/milestoneEdit/:id", async (req, res) => {
+app.get("/milestoneEdit/:memberid/:title", async (req, res) => {
   const { user } = req.session;
-
-  // Must be logged in at least
   if (!user) return res.redirect("/");
 
-  const milestoneId = req.params.id;
+  const memberid = req.params.memberid;
+  const milestonetitle = decodeURIComponent(req.params.title);
+  const ref = req.query.ref || "/milestones";
 
-  // Fetch the milestone to see who owns it
-  const milestone = await knex("milestones")
-    .select("memberid", "milestonetitle", "milestonedate")
-    .where("milestoneid", milestoneId)
+  // Fetch milestone with join
+  const milestone = await knex("milestones as m")
+    .join("members as mem", "m.memberid", "mem.memberid")
+    .select(
+      "m.memberid",
+      "m.milestonetitle",
+      "m.milestonedate",
+      "mem.memberfirstname",
+      "mem.memberlastname"
+    )
+    .where({
+      "m.memberid": memberid,
+      "m.milestonetitle": milestonetitle
+    })
     .first();
 
-  if (!milestone) {
-    return res.status(404).send("Milestone not found");
-  }
+  if (!milestone) return res.status(404).send("Milestone not found");
 
-  // Admins can edit any milestone
+  // Admins can edit any milestone; participants only their own
   const isAdmin = user.userRole === "admin";
+  const isOwner = user.userRole === "participant" && milestone.memberid === user.userID;
 
-  // Participant can edit *only their own* milestone
-  const isOwner =
-    user.userRole === "participant" &&
-    milestone.memberid === user.userID;
+  if (!isAdmin && !isOwner) return res.redirect("/");
 
-  if (!isAdmin && !isOwner) {
-    return res.redirect("/");
-  }
-
-  // Render the edit page
   res.render("milestones/milestoneEdit", {
     title: "Edit Milestone",
     active: "milestones",
-    milestone
+    milestone,
+    ref
   });
 });
 
-app.post("/deleteMilestone/:id/:title", (req, res) => {
-    knex("milestones").where({memberid: req.params.id, milestonetitle: title}).del().then(milestones => {
-        res.redirect("/milestones");
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({err});
-    })
+
+
+
+app.post("/milestoneEdit/:memberid/:title", async (req, res) => {
+  const { user } = req.session;
+  if (!user) return res.redirect("/");
+
+  const memberid = req.params.memberid;
+  const oldTitle = decodeURIComponent(req.params.title);
+  const ref = req.body.ref || `/milestones`;
+
+  // Fetch milestone
+  const milestone = await knex("milestones")
+    .where({ memberid, milestonetitle: oldTitle })
+    .first();
+  if (!milestone) return res.status(404).send("Milestone not found");
+
+  // Admins can edit any; participants only their own
+  const isAdmin = user.userRole === "admin";
+  const isOwner = user.userRole === "participant" && milestone.memberid === user.userID;
+  if (!isAdmin && !isOwner) return res.redirect("/");
+
+  // Update milestone
+  await knex("milestones")
+    .where({ memberid, milestonetitle: oldTitle })
+    .update({
+      milestonetitle: req.body.milestonetitle,
+      milestonedate: req.body.milestonedate
+    });
+
+  // Redirect back
+  res.redirect(ref);
 });
+
+app.post("/deleteMilestone/:memberid/:title", async (req, res) => {
+  const { user } = req.session;
+  if (!user) return res.redirect("/");
+
+  const memberid = req.params.memberid;
+  const title = decodeURIComponent(req.params.title);
+  const ref = req.body.ref || "/milestones";
+
+  const milestone = await knex("milestones")
+    .where({ memberid, milestonetitle: title })
+    .first();
+  if (!milestone) return res.status(404).send("Milestone not found");
+
+  const isAdmin = user.userRole === "admin";
+  const isOwner = user.userRole === "participant" && milestone.memberid === user.userID;
+  if (!isAdmin && !isOwner) return res.redirect("/");
+
+  await knex("milestones")
+    .where({ memberid, milestonetitle: title })
+    .del();
+
+  res.redirect(ref);
+});
+
+
+
+
 
 app.get("/users", requireRole("admin"), async (req, res) => {
   try {
@@ -969,7 +1026,7 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
     .then(user => {
       if (!user) return res.status(404).send("User not found");
 
-      knex.select(['milestonetitle', 'milestonedate'])
+      knex.select(['memberid', 'milestonetitle', 'milestonedate'])
         .from('milestones')
         .where('milestones.memberid', memberid)
         .then(milestones => {

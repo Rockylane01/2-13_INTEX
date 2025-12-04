@@ -1,2 +1,35 @@
 <!-- This page should only be visible to logged-in admins, OR the user to whom the milestone belongs. -->
 <!-- This page should also be visible to users under the guise of "add milestone", unless we make that a separate page. -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Milestone</title>
+</head>
+<body>
+
+  <h1>Edit Milestone</h1>
+
+  <!-- Edit form -->
+  <form action="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST">
+    <input type="hidden" name="ref" value="<%= ref || 'milestones' %>">
+
+    <label>Milestone Title:</label>
+    <input type="text" name="milestonetitle" value="<%= milestone.milestonetitle %>" required>
+
+    <label>Achievement Date:</label>
+    <input type="date" name="milestonedate" value="<%= milestone.milestonedate.toISOString().split('T')[0] %>" required>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <!-- Delete form -->
+  <form action="/deleteMilestone/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST">
+    <button type="submit">Delete Milestone</button>
+  </form>
+
+  <!-- Back link -->
+  <a href="/<%= ref === 'user_profile' ? `user_profile/${milestone.memberid}` : 'milestones' %>">Back</a>
+
+</body>
+</html>

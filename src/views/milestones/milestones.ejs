@@ -77,11 +77,16 @@
                   <td><%= milestone.memberfirstname %></td>
                   <td><%= milestone.milestonetitle %></td>
                   <td><%= milestone.milestonedate.toLocaleDateString() %></span></td>
-                  <td>
-                    <button class="btn btn-outline-primary btn-sm-pill">
-                      Edit
-                    </button>
-                  </td>
+                  <% if (userRole === 'admin' || milestone.memberid === userID) { %>
+                    <td>
+                      <a href="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>"
+                        class="btn btn-outline-primary btn-sm-pill">
+                        Edit
+                      </a>
+                    </td>
+                  <% } else { %>
+                    <td></td>
+                  <% } %>
                 </tr>
               <% }) %>
             <% } else { %>
