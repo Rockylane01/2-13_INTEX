@@ -101,12 +101,15 @@ app.post("/login", async (req, res) => {
     if (!valid) {
       return res.status(400).send("Invalid credentials");
     }
+    
+    req.session.user = { email };
 
     res.redirect("/");
   } catch (err) {
     res.status(500).send("Server error");
   }
 });
+
 
 
 
