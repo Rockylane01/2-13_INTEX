@@ -1,1 +1,37 @@
 <!-- This page should only be visible to logged-in admins. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+  <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+  <h1>Edit Donation</h1>
+
+  <form action="/editdonation/<%= donation.donationid %>" method="POST">
+    <div>
+      <label for="donorName">Donor First Name:</label>
+      <input type="text" id="donorName" name="donorName" 
+             value="<%= donation.memberfirstname %>" disabled>
+      <!-- Disabled because we’re not editing member info yet -->
+    </div>
+
+    <div>
+      <label for="donationAmount">Donation Amount:</label>
+      <input type="number" id="donationAmount" name="donationAmount" 
+             value="<%= donation.donationamount %>" step="0.01" required>
+    </div>
+
+    <div>
+      <label>Date of Donation:</label>
+      <input type="text" value="<%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %>" disabled>
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <p><a href="/donations">Back to Donations</a></p>
+</body>
+</html>
