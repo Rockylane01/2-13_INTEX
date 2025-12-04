@@ -12,7 +12,7 @@
     <% } else { %>
     <div class="top-auth-bar">
       <div class="auth-links">
-        <a href="/profile">Profile</a> |
+        <a href="/user_profile/<%= locals.user.userID %>">Profile</a>
         <a href="/logout">Log out</a>
       </div>
     </div>
@@ -33,10 +33,13 @@
         
         <div class="nav-links">
           <a href="/events">Events</a>  
-          <a href="/milestones">Milestones</a>
           <a href="/donations">Donations</a>
-          <!-- to be made admin-only -->
-          <a href="/admin">Admin Portal</a>
+          <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
+            <a href="/milestones">Milestones</a>
+          <% } %>
+          <% if (user && (user.userRole=== "admin")) { %>
+            <a href="/admin">Admin Portal</a>
+          <% } %>
         </div>
 
         <div>
