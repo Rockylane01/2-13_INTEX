@@ -834,9 +834,7 @@ app.post("/deleteSurvey/:id", async (req, res) => {
 });
 
 
-app.get("/milestones", (req, res) => {
-  const { user } = req.session;
-  if (!user) return res.redirect("/");
+app.get("/milestones", requireRole("admin", "participant"), (req, res) => {
 
   knex.select(['milestones.memberid', 'milestonetitle', 'milestones.memberid', 'milestonedate', 'memberfirstname', 'memberlastname'])
     .from('milestones')
