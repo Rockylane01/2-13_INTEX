@@ -32,3 +32,9 @@ RECOMMENDATIONS if approved:
     - users can manage their own info and delete their account
     - more robust difference between event template and specific event details
     - actually make payment info work
+
+
+
+
+    FIX BACK BUTTON ON SURVEY TO NOT JUST GO TO EVENT
+    FIX 403 ON ACCESSING WRONG PROFILE

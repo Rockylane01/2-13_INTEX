@@ -1,15 +1,15 @@
+<!-- If you're seeing this page, you were a user who was marked as having attended this event, which has now ended. -->
+<!-- your response will be logged away, tied to you, and to this event. -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %> · Ella Rises</title>
-
-  <!-- Fonts + Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/styles.css" rel="stylesheet">
 </head>
@@ -17,70 +17,64 @@
 <body>
   <%- include('../../partials/header') %>
 
+<!-- your call is important to us -->  
   <div class="container">
-
-    <!-- PAGE HEADER -->
     <div class="page-header">
       <h1 class="page-title">Event Survey</h1>
       <p class="page-subtitle">Your feedback helps us improve our program experiences</p>
     </div>
 
-    <!-- EVENT INFO CARD -->
+<!-- we've been watching you and know where you were, when you were there. -->
     <div class="data-card mb-4">
       <h3 class="mb-1"><%= eventname %></h3>
       <p class="text-muted"><%= eventdescription %></p>
-
       <p><strong>Date:</strong>
         <%= new Date(eventstart).toLocaleString() %> —
         <%= new Date(eventend).toLocaleString() %>
       </p>
-
       <p><strong>Location:</strong> <%= eventlocation %></p>
     </div>
 
-    <!-- SURVEY FORM CARD -->
+<!-- now give us more data voluntarily please -->
     <div class="form-card mb-5">
       <form action="/submitSurvey" method="POST">
 
-        <!-- Hidden fields -->
+<!-- except you don't KNOW you're giving us these pieces of data! ha HA!-->
         <input type="hidden" name="peid" value="<%= peid %>">
         <input type="hidden" name="memberid" value="<%= memberid %>">
         <input type="hidden" name="eventid" value="<%= eventid %>">
         <input type="hidden" name="surveysubmissiondate" value="<%= new Date().toISOString() %>">
         <input type="hidden" name="surveyoverallscore" id="surveyoverallscore">
 
-        <!-- Survey Fields -->
+<!-- on a scale of one to five how do you like your eggs -->
         <div class="mb-3">
           <label class="form-label">Satisfaction (1–5)</label>
           <input type="number" class="form-control" name="surveysatisfactionscore" min="1" max="5" required>
         </div>
-
         <div class="mb-3">
           <label class="form-label">Usefulness (1–5)</label>
           <input type="number" class="form-control" name="surveyusefulnessscore" min="1" max="5" required>
         </div>
-
         <div class="mb-3">
           <label class="form-label">Instructor (1–5)</label>
           <input type="number" class="form-control" name="surveyinstructorscore" min="1" max="5" required>
         </div>
-
         <div class="mb-3">
           <label class="form-label">Recommendation (1–5)</label>
           <input type="number" class="form-control" name="surveyrecommendationscore" min="1" max="5" required>
         </div>
-
         <div class="mb-3">
           <label class="form-label">Comments (optional)</label>
           <textarea class="form-control" name="surveycomments" maxlength="1000" rows="4"></textarea>
         </div>
 
-        <!-- Buttons -->
+<!-- no no no no wait wait wait wait -->
         <div class="d-flex justify-content-between mt-4">
           <a href="/registration/<%= eventid %>" class="btn btn-outline-primary btn-sm-pill">
             Back
           </a>
 
+<!-- when an outfielder catches a hoagie: sub mitt -->          
           <button type="submit" class="btn btn-primary btn-sm-pill">
             Submit Survey
           </button>
@@ -91,7 +85,7 @@
   </div>
 
   <script>
-    // auto-calc average score before submit
+// auto-calc average score before submit
     const form = document.querySelector("form");
     form.addEventListener("submit", () => {
       const scores = [
