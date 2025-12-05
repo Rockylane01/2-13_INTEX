@@ -1087,7 +1087,7 @@ app.post("/milestoneEdit/:memberid/:title", async (req, res) => {
     });
 
   // Redirect back
-  res.redirect(ref);
+  res.redirect(`/${ref}/${memberid}`);
 });
 
 app.post("/deleteMilestone/:memberid/:title", async (req, res) => {
