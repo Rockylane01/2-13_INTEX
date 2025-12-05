@@ -24,3 +24,7 @@ pass in more back buttons and variables about event names and stuff across pages
 
 
 -- calculate user donation total instead of referencing the static column
+
+
+RECOMMENDATIONS if approved:
+    - require admin approval to have a member (non-guest) account.

@@ -1,6 +1,9 @@
-<!-- Add admin-only button to admin.ejs -->
+<!-- dis is da header. it shows up wherever we tell it to -->
+
 <div class="nav-bar">
-  <!-- Top white bar (only for visitors) -->
+
+<!-- it has a signup link which takes you to a form which, when submitted, adds you to the credentials and the members tables. -->
+<!-- login link does what you'd expect. both of these only show up if you're not logged in. -->
   <% if (!user) { %>
     <div class="top-auth-bar">
       <div class="auth-links">
@@ -8,6 +11,8 @@
         <a href="#">|</a>
         <a href="/login">Log in</a>
       </div>
+
+<!-- but if you are logged in, you get profile and log out buttons. -->
     </div>
     <% } else { %>
     <div class="top-auth-bar">
@@ -19,7 +24,7 @@
     </div>
     <% } %>
     
-    <!-- Pink navigation bar -->
+<!-- below that is a separate bar for navigation. The icon send you to index. -->
     <nav class="pink-nav">
      
       <div class="nav-logo">
@@ -27,7 +32,7 @@
       </div>
     
     
-        
+<!-- donations and donate are visible to everyone. milestones and events are only visible to participants/admins. the rest are admin-only. -->        
         <div class="nav-links">
           <a href="/donations">Donations</a>
           <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
@@ -44,4 +49,5 @@
           <a href="/donationform" class="donate-btn">donate</a>
         </div>    
     </nav>
-</div>  
+</div>
+<!-- cheers -->

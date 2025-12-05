@@ -1,5 +1,6 @@
-<!-- This page should be visible to guests. -->
-<!-- This page will have a mock-up donation form. No need to verify payment info for this build. -->
+<!-- This page is visible to guests. -->
+<!-- This page is a mock-up donation form. No need to verify payment info for this build. -->
+<!-- However, it does properly update the database, and thus does affect some info on the site. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,6 +10,8 @@
 </head>
 <body>
   <h1>Make a Donation</h1>
+
+<!-- the form has set requirements for input types so you can't mess it up too bad. Since the "card info" isn't really used, we didn't set params on those. -->
 
   <form action="/donationform" method="POST">
     <div>
@@ -35,7 +38,7 @@
       <input type="text" placeholder="CVC">
     </div>
 
-    <!-- Hidden field for memberID if logged in -->
+<!-- Hidden field for memberID if logged in -- associates the donation to the member. This is null if you're a guest. -->
     <input type="hidden" name="memberid" value="<%= userID %>">
 
     <button type="submit">Submit Donation</button>
