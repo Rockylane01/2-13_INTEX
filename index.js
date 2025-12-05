@@ -757,27 +757,68 @@ app.post("/deleteEvent/:id", requireRole("admin"), (req, res) => {
 });
 
 
-app.get("/donations", (req, res) => {
-  knex.select(knex.raw('SUM(donationamount) as total')).from('donations')
-    .then(result => {
-      let totalAmount = result[0].total || 0;
+app.get("/donations", async (req, res) => {
+  try {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const offset = (page - 1) * limit;
 
-      knex.select('donations.donationid', 'donorname', 'donationdate', 'donationamount')
-      .from('donations')
-      .then(donations => {
-        res.render('donations/donations', {
-          title: "Donations",
-          active: "donations",
-          donations: donations,
-          totalAmount: totalAmount,
-          userRole: req.session.user ? req.session.user.userRole : null
-        });
+    // SUM total donations (not filtered)
+    const totalRow = await knex("donations").sum("donationamount as total").first();
+    const totalAmount = Number(totalRow.total) || 0;
 
+    // COUNT total records for pagination
+    const countQuery = knex("donations").count("donationid as count");
+
+    if (search) {
+      countQuery.where((builder) => {
+        builder
+          .where("donorname", "ilike", `%${search}%`)
+          .orWhere("donationamount::text", "ilike", `%${search}%`)
+          .orWhere("donationdate::text", "ilike", `%${search}%`);
       });
-    })
+    }
 
+    const totalCount = await countQuery.first();
+    const totalRecords = Number(totalCount.count);
+    const totalPages = Math.ceil(totalRecords / limit);
 
+    // SELECT donations for this page
+    const donationsQuery = knex("donations")
+      .select("donationid", "donorname", "donationdate", "donationamount")
+      .orderBy("donationdate", "desc")
+      .limit(limit)
+      .offset(offset);
+
+    if (search) {
+      donationsQuery.where((builder) => {
+        builder
+          .where("donorname", "ilike", `%${search}%`)
+          .orWhere("donationamount::text", "ilike", `%${search}%`)
+          .orWhere("donationdate::text", "ilike", `%${search}%`);
+      });
+    }
+
+    const donations = await donationsQuery;
+
+    res.render("donations/donations", {
+      title: "Donations",
+      active: "donations",
+      donations,
+      totalAmount,
+      search,
+      currentPage: page,
+      totalPages,
+      userRole: req.session.user ? req.session.user.userRole : null
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading donations");
+  }
 });
+
 
 app.post("/deleteDonation/:id", (req, res) => {
     knex("donations").where("donationid", req.params.id).del().then(donations => {
