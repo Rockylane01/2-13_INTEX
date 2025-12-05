@@ -5,43 +5,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title><%= title %></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %> · Ella Rises</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <h1>Make a Donation</h1>
+  <%- include('../../partials/header') %>
 
-<!-- the form has set requirements for input types so you can't mess it up too bad. Since the "card info" isn't really used, we didn't set params on those. -->
-
-  <form action="/donationform" method="POST">
-    <div>
-      <label for="donorname">Name for donation:</label>
-      <input type="text" id="donorname" name="donorname" required>
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Make a Donation</h1>
+      <p class="page-subtitle">
+        Support Ella Rises programs and initiatives. Your contribution helps empower young women in STEM and cultural education.
+      </p>
     </div>
 
-    <div>
-      <label for="donationamount">Donation Amount:</label>
-      <input type="number" id="donationamount" name="donationamount" step="0.01" required>
+    <!-- the form has set requirements for input types so you can't mess it up too bad. Since the "card info" isn't really used, we didn't set params on those. -->
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="data-card">
+          <div class="card-body">
+            <form action="/donationform" method="POST">
+              <!-- Donor Information Section -->
+              <h5 class="card-title mb-4">Donor Information</h5>
+
+              <div class="mb-3">
+                <label for="donorname" class="form-label">Full Name</label>
+                <input type="text" id="donorname" name="donorname" class="form-control" placeholder="Enter your full name" required>
+                <div class="form-text">This name will appear on donation records and acknowledgments.</div>
+              </div>
+
+              <!-- Donation Amount Section -->
+              <h5 class="card-title mb-4 mt-5">Donation Amount</h5>
+
+              <div class="mb-4">
+                <label for="donationamount" class="form-label">Donation Amount ($)</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" id="donationamount" name="donationamount" class="form-control" step="0.01" min="1" placeholder="0.00" required>
+                </div>
+                <div class="form-text">Enter any amount you wish to donate. Minimum $1.00.</div>
+              </div>
+
+              <!-- Quick Amount Buttons -->
+              <div class="mb-4">
+                <label class="form-label">Quick Select Amount</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(25)">$25</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(50)">$50</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(100)">$100</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(250)">$250</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="setAmount(500)">$500</button>
+                </div>
+              </div>
+
+              <!-- Payment Information (Mock-up) -->
+              <h5 class="card-title mb-4 mt-5">Payment Information</h5>
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Demo Mode:</strong> This is a demonstration form. No real payment processing occurs.
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label class="form-label">Card Number</label>
+                  <input type="text" class="form-control" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+                  <div class="form-text">Demo field - enter any 16-digit number</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Expiration Date</label>
+                  <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                  <div class="form-text">Demo field - enter any date</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">CVC</label>
+                  <input type="text" class="form-control" placeholder="CVC" maxlength="4">
+                  <div class="form-text">Demo field - enter any 3-4 digits</div>
+                </div>
+              </div>
+
+              <!-- Hidden field for memberID if logged in -- associates the donation to the member. This is null if you're a guest. -->
+              <input type="hidden" name="memberid" value="<%= userID %>">
+
+              <!-- Submit Button -->
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                  <i class="fas fa-heart me-2"></i>Complete Donation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Mock-up credit card fields (cosmetic only) -->
-    <div>
-      <label>Card Number:</label>
-      <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+    <div class="footer">
+      &copy; <%= new Date().getFullYear() %> Ella Rises · Make a Donation
     </div>
-    <div>
-      <label>Expiration Date:</label>
-      <input type="text" placeholder="MM/YY">
-    </div>
-    <div>
-      <label>CVC:</label>
-      <input type="text" placeholder="CVC">
-    </div>
+  </div>
 
-<!-- Hidden field for memberID if logged in -- associates the donation to the member. This is null if you're a guest. -->
-    <input type="hidden" name="memberid" value="<%= userID %>">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Format card number input
+    document.querySelector('input[placeholder="XXXX XXXX XXXX XXXX"]').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+      e.target.value = value.trim();
+    });
 
-    <button type="submit">Submit Donation</button>
-  </form>
+    // Format expiry date input
+    document.querySelector('input[placeholder="MM/YY"]').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+      }
+      e.target.value = value;
+    });
+
+    // Set donation amount from quick buttons
+    function setAmount(amount) {
+      document.getElementById('donationamount').value = amount;
+    }
+
+    // Form validation and submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const amount = parseFloat(document.getElementById('donationamount').value);
+      const termsChecked = document.getElementById('termsCheck').checked;
+
+      if (amount < 1) {
+        e.preventDefault();
+        alert('Please enter a donation amount of at least $1.00');
+        return;
+      }
+
+      if (!termsChecked) {
+        e.preventDefault();
+        alert('Please agree to the Terms and Conditions');
+        return;
+      }
+
+      // Show loading state
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+    });
+
+    // Auto-format donation amount
+    document.getElementById('donationamount').addEventListener('blur', function(e) {
+      const value = parseFloat(e.target.value);
+      if (!isNaN(value)) {
+        e.target.value = value.toFixed(2);
+      }
+    });
+  </script>
+
+  <style>
+    .impact-item {
+      padding: 1rem;
+      border: 1px solid #e9ecef;
+      border-radius: 0.5rem;
+      transition: transform 0.2s;
+    }
+
+    .impact-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .input-group-text {
+      background-color: #f8f9fa;
+      border-color: #dee2e6;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+  </style>
 </body>
 </html>
