@@ -107,10 +107,11 @@
                       <h6 class="card-title mb-1"><%= milestone.milestonetitle %></h6>
                       <span class="text-muted"><%= milestone.milestonedate.toLocaleDateString() %></span>
                       <div class="mt-2">
-                        <a href="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>?ref=user_profile" class="text-decoration-none me-3">Edit</a>
+                        <a id="user_profile_edit" class="btn btn-secondary btn-sm-pill" href="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>?ref=user_profile" class="text-decoration-none me-3">Edit</a>
                         <!-- Delete form -->
                         <form action="/deleteMilestone/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST" class="d-inline">
-                          <button class="btn btn-link text-danger p-0 text-decoration-none" type="submit">Delete</button>
+                          <button id="user_profile_delete" class="btn btn-danger btn-sm-pill" type="submit">Delete</button>
+                          <input type="hidden" name="ref" value="user_profile/<%= profileUser.memberid %>">
                         </form>
                       </div>
                     </div>
