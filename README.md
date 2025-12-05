@@ -4,9 +4,6 @@ INTEX code
 
  - gotta add the teapot error
 
--- calculate user donation total instead of referencing the static column
-
-
 RECOMMENDATIONS if approved:
     - require admin approval to have a member (non-guest) account.
     - calculate the a few more columns instead of having them coded in, notably the total donations per user.
@@ -15,3 +12,5 @@ RECOMMENDATIONS if approved:
     - actually make payment info work
 
     FIX BACK BUTTON ON SURVEY TO NOT JUST GO TO EVENT
+    FIX DELETE MILESTONE REDIRECT
+    ADD BACK BUTTON ON FILTERED SURVEY EVENT VIEW?

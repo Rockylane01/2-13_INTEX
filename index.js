@@ -1393,6 +1393,12 @@ app.get("/dashboard", requireRole("admin"), (req, res) => {
   });
 });
 
+app.get("/teapot", (req, res) => {
+  res.status(418).render("errors/418", {
+    message: "Funnily enough I'm not actually a teapot, seeing as I am beholden to the BYU Honor Code. I am simply a pot."
+  });
+});
+
 app.use((req, res) => {
   res.status(404).render("errors/404");
 });

@@ -449,6 +449,7 @@
   width: 42px;
   background-color: #000;
   cursor: pointer;
+  text-decoration: none;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -462,6 +463,12 @@
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+.footer-socials a,
+.footer-socials a:hover,
+.footer-socials a:focus,
+.footer-socials a:active {
+  text-decoration: none !important;
+}
 
 /* Copyright text */
 .footer-copy {
