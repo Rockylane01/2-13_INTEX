@@ -1,3 +1,6 @@
+<!-- This page is only visible to logged-in users. -->
+<!-- it displays all the events in a list, conveniently paginated. -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +21,13 @@
 
     <div class="container">
 
-        <!-- PAGE HEADER -->
         <div class="page-header d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="page-title">Events</h1>
                 <p class="page-subtitle">Program events and workshops empowering young women</p>
             </div>
 
+<!-- can only see the add event button if you're an admin. -->
             <% if (user && user.userRole === "admin") { %>
                 <a href="/eventEdit" class="btn btn-primary btn-sm-pill">
                     + Add Event
@@ -34,7 +37,7 @@
 
         <div class="data-card">
 
-            <!-- SEARCH BAR -->
+<!-- none of the puns I can think of that have to do with "search" are any good. I'll keep looking. -->
             <div class="search-row">
                 <form action="/events" method="GET" class="d-flex w-100" style="gap: 10px;">
                     <input
@@ -44,14 +47,12 @@
                         placeholder="Search by event name or location"
                         value="<%= typeof search !== 'undefined' ? search : '' %>"
                     >
-
                     <button class="btn btn-outline-primary btn-sm-pill" type="submit">Search</button>
-
                     <a href="/events" class="btn btn-secondary btn-sm-pill">Clear</a>
                 </form>
             </div>
 
-            <!-- EVENTS TABLE -->
+<!-- now for the main event: EVENTS TABLE -->
             <div class="table-responsive">
                 <table class="table align-middle mb-0">
                     <thead>
@@ -79,7 +80,7 @@
                     
                                     <td><%= ev.eventlocation %></td>
                     
-                                    <!-- VIEW BUTTON (admins AND participants) -->
+<!-- VIEW BUTTON (for admins AND participants) -->
                                     <td>
                                         <form action="/registration/<%= ev.eventid %>" method="GET">
                                             <button class="btn btn-outline-primary btn-sm-pill" type="submit">
@@ -88,7 +89,7 @@
                                         </form>
                                     </td>
                     
-                                    <!-- EDIT BUTTON (admins only) -->
+<!-- EDIT BUTTON (admins only) -->
                                     <% if (user && user.userRole === "admin") { %>
                                     <td>
                                         <a href="/eventEdit/<%= ev.eventid %>" 
@@ -98,7 +99,7 @@
                                     </td>
                                     <% } %>
                     
-                                    <!-- DELETE BUTTON (admins only) -->
+<!-- DELETE BUTTON (admins only) -->
                                     <% if (user && user.userRole === "admin") { %>
                                     <td>
                                         <form action="/deleteEvent/<%= ev.eventid %>"
@@ -112,7 +113,8 @@
                                     <% } %>
                                 </tr>
                             <% }) %>
-                    
+
+<!-- if no events in the table: -->                    
                         <% } else { %>
                             <tr>
                                 <td colspan="10" class="text-center text-muted">
@@ -123,7 +125,7 @@
                     </tbody>                    
                 </table>
 
-                <!-- PAGINATION -->
+<!-- PAGINATION (thanks liv) -->
                 <div class="pagination mt-3 d-flex align-items-center justify-content-center gap-2">
 
                     <% if (totalPages > 1) { %>

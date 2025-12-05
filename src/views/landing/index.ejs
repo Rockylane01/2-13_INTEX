@@ -6,42 +6,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ella Rises</title>
-
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="/css/styles.css">
-
-    <!-- Link to icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 </head>
 
 <body>
-
-    <!-- HEADER -->
     <%- include('../../partials/header.ejs', { user }) %>
-
-    <!-- HERO SECTION -->
     <div class="landing-hero full-width">
-
         <div class="hero-grid">
-
+          
+<!-- beanstalk-sourced image. yay, s3! -->
             <img src="https://elasticbeanstalk-us-east-2-343989049654.s3.us-east-2.amazonaws.com/images/artevent.jpg" alt="Ella Rises Art Event" class="hero-image">
-
             <div class="hero-text">
                 <h1 class="hero-title">OUR MISSION</h1>
                 <p class="hero-subtext">
                     Invite young women to pursue higher education and embrace their heritage 
                     by providing culturally rooted programs and educational experiences.
                 </p>
-
-                <% if (!user) { %>
                 <a href="/donate" class="landing-donate-btn">Donate</a>
-                <% } %>
             </div>
-
         </div>
-
     </div>
 
     <div class="ella-rises-banner">

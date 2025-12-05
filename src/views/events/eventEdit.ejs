@@ -1,7 +1,6 @@
-<!-- This page should only be visible to logged-in admins. -->
-<!-- This should also serve as the add event page. If editing an existing event, the event data should be auto-filled in the fields. -->
-<!-- The action on submit should be an UPDATE OR CREATE on the donation ID in the database. -->
-<!-- This page should only be visible to logged-in users. -->
+<!-- This page is only visible to logged-in admins. -->
+<!-- This also serves as the add event page. If editing an existing event, the event data is be auto-filled in the fields. -->
+<!-- if the event exists, it updates the record in the database. Otherwise, it adds a new record. -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +18,7 @@
 <body>
   <%- include('../../partials/header') %>
 
+<!-- title changes based on if there's an eventid, which only happens if you're editing an existing event. nifty. -->  
   <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
@@ -29,12 +29,13 @@
     <div class="card">
       <div class="card-body">
         <form action="/eventEdit" method="POST">
-          <!-- Hidden event ID for edits -->
+
+<!-- gasp! he is hidden! it's the hidden event ID for edits -->
           <% if (event?.eventid) { %>
             <input type="hidden" name="eventid" value="<%= event.eventid %>">
           <% } %>
 
-          <!-- Event Template Dropdown -->
+<!-- Event Template Dropdown -- the event template fills in a bunch of basic info about the event. -->
           <label for="eventtemplate" class="form-label">Event Template</label>
           <select name="eventtemplate" id="eventtemplate" class="form-select mb-3" required>
             <% eventtemplates.forEach(template => { %>
@@ -45,7 +46,7 @@
             <% }) %>
           </select>
 
-          <!-- Event fields -->
+<!-- the actual event fields have their inputs limited so you don't break stuff. -->
           <label for="eventdatetimestart" class="form-label">Event Start</label>
           <input type="datetime-local" class="form-control mb-3" name="eventdatetimestart" 
             value="<%= event?.eventdatetimestart ? event.eventdatetimestart.toISOString().slice(0,16) : '' %>" required>
@@ -66,7 +67,7 @@
           <input type="datetime-local" class="form-control mb-3" name="eventregistrationdeadline" 
             value="<%= event?.eventregistrationdeadline ? event.eventregistrationdeadline.toISOString().slice(0,16) : '' %>" required>
 
-
+<!-- I always hear "Submit!" in the voice of Sephiroth, as he appeared in Kingdom Hearts 1. Fun game. -->
           <button type="submit" class="btn btn-primary">Save Event</button>
         </form>
       </div>

@@ -28,3 +28,7 @@ pass in more back buttons and variables about event names and stuff across pages
 
 RECOMMENDATIONS if approved:
     - require admin approval to have a member (non-guest) account.
+    - calculate the a few more columns instead of having them coded in, notably the total donations per user.
+    - users can manage their own info and delete their account
+    - more robust difference between event template and specific event details
+    - actually make payment info work

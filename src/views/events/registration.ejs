@@ -1,10 +1,35 @@
-<!-- This page should only be available to logged-in users. -->
-<!-- The "register" button should only be displayed if the registration deadline is in the future. -->
-<!-- The "register" button should be changed to "unregister" if the logged-in user ID is in the registration table for this event, and the event has not concluded. -->
-<!-- The "register" button should be changed "Submit Survey" if the logged-in user ID is in the registration table for the event, the event has concluded, and the user's instance of registration lists them as having attended. -->
-<!-- If none of the above are true, the button should not be displayed. -->
-<!-- Optional: an admin-only button that displays surveys for this event. Can be visible at any time. -->
-<!-- This page should show a list of those registered to attend the event. -->
+<!-- This page is only available to logged-in users. -->
+<!--
+
+This page's logic is a doozy.
+It displays event details, and also displays buttons according to a few things.
+
+CASE registration deadline is in the future
+    CASE logged-in user doesn't have an associated registration record in the table with status "signedup"
+        - REGISTER button is displayed. This creates a registration instance for this event or updates their existing one to "signedup"
+    CASE user is "signedup"
+        - UNREGISTER button changes status to "cancelled"
+CASE registration deadline has passed
+    CASE user has been marked as "attended"
+        CASE user has not filled out a survey
+            CASE event has ended
+                - Take survey button appears and works
+            CASE event is ongoing or in the future
+                - Take survey button shows up but tells them the event is ongoing.
+        CASE user has completed survey
+            - Take survey button is gone
+    CASE user was not marked as "attended"
+        - No survey button
+
+
+... furthermore, admins have more functionality.
+If there are people who are marked as "signedup", admins have the ability to "end event" marking them all as no-show.
+If people are marked as attended, there's a "view surveys" button that lets the admin see the filled-out surveys for this event.
+Admins are also in charge of check-in -- they can see a list of not only people who are "attended" and "signedup", but also cancelled and no-show.
+The admins have the ability to change registered users' check-in status via a button
+
+I think that covers it.
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,24 +57,20 @@
 
   <div class="container">
 
-    <!-- PAGE HEADER -->
+<!-- PAGE HEADER passes in event details -->
     <div class="page-header">
       <h1 class="page-title"><%= event.eventname %></h1>
       <p class="page-subtitle"><%= event.eventdescription %></p>
     </div>
 
-    <!-- ========= EVENT DETAILS CARD ========= -->
     <div class="data-card mb-4">
-
-      <!-- Event Info -->
       <p><strong>Date:</strong>
         <%= new Date(event.eventdatetimestart).toLocaleString() %> –
         <%= new Date(event.eventdatetimeend).toLocaleString() %>
       </p>
-
       <p><strong>Location:</strong> <%= event.eventlocation %></p>
 
-      <!-- ACTION BUTTONS -->
+<!-- ACTION BUTTONS subject to the logic I outlined above. -->
       <div class="d-flex flex-wrap gap-2 mt-3">
 
         <% if (showRegisterBtn) { %>
@@ -59,7 +80,6 @@
             </button>
           </form>
         <% } %>
-
         <% if (showCancelBtn) { %>
           <form action="/cancel/<%= event.eventid %>" method="POST">
             <button type="submit" class="btn btn-outline-primary btn-sm-pill">
@@ -67,51 +87,44 @@
             </button>
           </form>
         <% } %>
-
         <% if (showTakeSurvey) { %>
           <a href="/surveyForm/<%= event.eventid %>" class="btn btn-outline-primary btn-sm-pill">
             Take Survey
           </a>
         <% } %>
-
         <% if (surveySubmitted) { %>
           <span class="text-success ms-2">Survey Submitted</span>
         <% } %>
 
-        <!-- ADMIN ACTIONS -->
+<!-- ADMIN ACTIONS which I also detailed above. -->
         <% if (userRole === "admin") { %>
 
           <% const anySignedUp = participants.some(p => p.registrationstatus === 'signedup'); %>
           <% const anyAttended = participants.some(p => p.registrationstatus === 'attended'); %>
 
+<!-- oh yeah there are confirmation pop-ups -->
           <% if (eventEnded && anySignedUp) { %>
             <form method="POST" action="/endEvent/<%= event.eventid %>"
                   onsubmit="return confirm('Are you sure you want to end this event? All signed-up participants will be marked no-show.');">
               <button type="submit" class="btn btn-danger btn-sm-pill">End Event</button>
             </form>
           <% } %>
-
           <% if (anyAttended) { %>
             <a href="/surveys?eventid=<%= event.eventid %>" class="btn btn-outline-primary btn-sm-pill">
               View All Surveys
             </a>
           <% } %>
-
           <a href="/eventEdit/<%= event.eventid %>" class="btn btn-secondary btn-sm-pill">
             Edit Event
           </a>
-
         <% } %>
       </div>
     </div>
 
-    <!-- ========= PARTICIPANTS CARD ========= -->
+<!-- table for the registered users. some fields are hidden if you're not an admin. -->
     <div class="data-card">
-
       <h4 class="mb-3">Participants</h4>
-
       <% if (participants && participants.length > 0) { %>
-
         <div class="table-responsive">
           <table class="table align-middle">
             <thead>
@@ -127,7 +140,6 @@
                 <% } %>
               </tr>
             </thead>
-
             <tbody>
               <% participants
                 .sort((a, b) => {
@@ -139,7 +151,6 @@
                 .forEach(p => {
                   let checkInText = "";
                   let confirmMessage = "";
-
                   if (p.registrationstatus === 'attended') {
                     checkInText = 'Check Out';
                     confirmMessage = `Are you sure you want to check out ${p.memberfirstname} ${p.memberlastname}?`;
@@ -151,14 +162,12 @@
                     confirmMessage = 'Confirm check-in?';
                   }
               %>
-
                 <tr>
                   <td><%= p.memberfirstname %></td>
                   <td><%= p.memberlastname %></td>
                   <td><%= p.registrationstatus %></td>
                   <td><%= p.registrationcheckintime ? new Date(p.registrationcheckintime).toLocaleString() : '-' %></td>
                   <td><%= p.registrationcreatedat ? new Date(p.registrationcreatedat).toLocaleString() : '-' %></td>
-
                   <% if (userRole === 'admin') { %>
                     <td>
                       <% if (!eventEnded) { %>
@@ -172,7 +181,6 @@
                         <span class="text-muted">Event Ended</span>
                       <% } %>
                     </td>
-
                     <td>
                       <% if (p.registrationstatus === 'attended' && p.hasSurvey) { %>
                         <a href="/surveys/<%= p.peid %>" class="btn btn-outline-primary btn-sm-pill">
@@ -183,14 +191,13 @@
                       <% } %>
                     </td>
                   <% } %>
-
                 </tr>
-
               <% }) %>
             </tbody>
           </table>
         </div>
 
+<!-- fallback if no registrations -->        
       <% } else { %>
         <p class="text-muted">No participants to display yet.</p>
       <% } %>
