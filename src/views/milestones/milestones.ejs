@@ -32,9 +32,9 @@
         </p>
       </div>
 
-      <% if (userRole === 'admin') { %>
-        <a href="/milestoneAdd" class="btn btn-primary btn-sm-pill">
-          + Add Milestone
+      <% if (userRole === 'admin' || userRole === 'participant') { %>
+        <a href="/milestoneAdd/milestones" class="btn btn-primary btn-sm-pill">
+          <i class="fas fa-plus me-1"></i>Add Milestone
         </a>
       <% } %>
     </div>

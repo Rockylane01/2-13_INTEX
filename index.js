@@ -988,6 +988,31 @@ app.get("/milestones", requireRole("admin", "participant"), async (req, res) => 
   }
 });
 
+app.get("/milestoneAdd/:ref", async (req, res) => {
+  try {
+    res.render("milestones/milestoneAdd", {
+      title: "Add Milestone",
+      memberid: req.session.user.userID,
+      milestone: null,
+      ref: req.params.ref
+    });
+  } catch (err) {
+    console.error(err);
+    res.redirect("/milestones");
+  }
+});
+
+app.post("/milestoneAdd", async (req, res) => {
+  const { memberid, milestonetitle, milestonedate } = req.body;
+  await knex("milestones").insert({ memberid, milestonetitle, milestonedate });
+  console.log(req.body.ref);
+
+  if (req.body.ref === "user_profile") {
+    res.redirect(`/user_profile/${memberid}`);
+  } else {
+    res.redirect(`/milestones`);
+  }
+});
 
 app.get("/milestoneEdit/:memberid/:title", async (req, res) => {
   const { user } = req.session;
