@@ -385,6 +385,16 @@
     background-color: #3a3f3bd1;
   }
 
+  #user_profile_delete {
+    margin-top: 10px;
+  }
+
+  #user_profile_edit {
+    margin-top: 10px;
+    padding: 8.5px 25px;
+    border: black;
+  }
+
  /* Quick Amount Buttons (Bigger + Matching Ella Rises Style) */
 .quick-amount-btn {
   border-radius: 999px;
