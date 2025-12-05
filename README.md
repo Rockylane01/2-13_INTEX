@@ -4,9 +4,6 @@ INTEX code
 
  - gotta add the teapot error
 
--- calculate user donation total instead of referencing the static column
-
-
 RECOMMENDATIONS if approved:
     - require admin approval to have a member (non-guest) account.
     - calculate the a few more columns instead of having them coded in, notably the total donations per user.
