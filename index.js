@@ -1155,7 +1155,7 @@ app.post("/donationform", async (req, res) => {
       donationamount: donationamount
     });
 
-    res.send("Donation recorded. Thank you!"); // or redirect to a thank-you page
+    res.redirect("/donations");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error recording donation");
