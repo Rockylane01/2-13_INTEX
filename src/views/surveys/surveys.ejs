@@ -60,10 +60,17 @@
                     %>
                   </td>
                   <td>
-                    <a href="/surveys/<%= s.peid %>" 
-                       class="btn btn-outline-primary btn-sm-pill">
-                      View Survey
-                    </a>
+                    <!-- sets the ref to event or all based on whether you are viewing all surveys or event surveys-->
+                    <% if (eventid) { %>
+                      <a href="/surveys/<%= s.peid %>?ref=event" 
+                         class="btn btn-outline-primary btn-sm-pill">
+                        View Survey
+                      </a>
+                    <% } else { %>
+                      <a href="/surveys/<%= s.peid %>?ref=all" class="btn btn-outline-primary btn-sm-pill">
+                        View Survey
+                      </a>
+                    <% } %>
                   </td>
                 </tr>
               <% }) %>
