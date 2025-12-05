@@ -889,7 +889,8 @@ app.get("/surveys/:peid", requireRole("admin"), async (req, res) => {
     res.render("surveys/individualSurvey", {
       title: "Survey Detail",
       eventid: survey.eventid,
-      survey
+      survey,
+      ref: req.query.ref
     });
   } catch (err) {
     console.error(err);
