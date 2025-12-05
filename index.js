@@ -1095,7 +1095,7 @@ app.post("/deleteMilestone/:memberid/:title", async (req, res) => {
 
   const memberid = req.params.memberid;
   const title = decodeURIComponent(req.params.title);
-  const ref = req.body.ref || "/milestones";
+  const ref = req.body.ref || "milestones";
 
   const milestone = await knex("milestones")
     .where({ memberid, milestonetitle: title })
@@ -1110,7 +1110,7 @@ app.post("/deleteMilestone/:memberid/:title", async (req, res) => {
     .where({ memberid, milestonetitle: title })
     .del();
 
-  res.redirect(ref);
+  res.redirect(`/${ref}`);
 });
 
 

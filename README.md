@@ -9,7 +9,6 @@ RECOMMENDATIONS if approved:
     - more robust difference between event template and specific event details
     - actually make payment info work
 
-    FIX DELETE MILESTONE REDIRECT
     ADD BACK BUTTON ON FILTERED SURVEY EVENT VIEW?
     tables sortable
     end and not just next button on pagination maybe exclusive with the above

@@ -111,6 +111,7 @@
                         <!-- Delete form -->
                         <form action="/deleteMilestone/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST" class="d-inline">
                           <button id="user_profile_delete" class="btn btn-danger btn-sm-pill" type="submit">Delete</button>
+                          <input type="hidden" name="ref" value="user_profile/<%= profileUser.memberid %>">
                         </form>
                       </div>
                     </div>
