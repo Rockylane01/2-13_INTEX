@@ -756,7 +756,7 @@ app.post("/deleteEvent/:id", requireRole("admin"), (req, res) => {
     });
 });
 
-
+// Donations
 app.get("/donations", async (req, res) => {
   try {
     const search = req.query.search?.trim() || "";
@@ -764,13 +764,13 @@ app.get("/donations", async (req, res) => {
     const limit = 30;
     const offset = (page - 1) * limit;
 
-    // --- TOTAL DONATIONS SUM (not filtered) ---
+    // --- TOTAL DONATION SUM ---
     const totalRow = await knex("donations")
       .sum("donationamount as total")
       .first();
     const totalAmount = Number(totalRow.total) || 0;
 
-    // --- COUNT QUERY (pagination) ---
+    // --- COUNT QUERY (for pagination) ---
     const countQuery = knex("donations").count("donationid as count");
 
     if (search) {
@@ -781,14 +781,14 @@ app.get("/donations", async (req, res) => {
       });
     }
 
-    const totalCountResult = await countQuery.first();
-    const totalRecords = Number(totalCountResult.count);
-    const totalPages = Math.ceil(totalRecords / limit);
+    const totalCount = (await countQuery.first()).count;
+    const totalPages = Math.ceil(Number(totalCount) / limit);
 
-    // --- SELECT FILTERED DONATIONS FOR THIS PAGE ---
+    // --- SELECT DONATIONS (with improved ordering!) ---
     const donationsQuery = knex("donations")
       .select("donationid", "donorname", "donationdate", "donationamount")
-      .orderBy("donationdate", "desc")
+      .orderByRaw("donationdate IS NULL")  // puts N/A dates last
+      .orderBy("donationdate", "desc")     // newest → oldest
       .limit(limit)
       .offset(offset);
 
@@ -819,8 +819,6 @@ app.get("/donations", async (req, res) => {
     res.status(500).send("Error loading donations");
   }
 });
-
-
 
 app.post("/deleteDonation/:id", (req, res) => {
     knex("donations").where("donationid", req.params.id).del().then(donations => {
@@ -1087,7 +1085,7 @@ app.post("/milestoneEdit/:memberid/:title", async (req, res) => {
     });
 
   // Redirect back
-  res.redirect(ref);
+  res.redirect(`/${ref}/${memberid}`);
 });
 
 app.post("/deleteMilestone/:memberid/:title", async (req, res) => {

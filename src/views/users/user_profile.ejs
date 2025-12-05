@@ -102,11 +102,17 @@
             <div class="col-md-6 col-lg-4 mb-4">
               <div class="card milestone-card h-100">
                 <div class="card-body">
-                  <div class="d-flex align-items-center mb-3">
+                      <div class="d-flex align-items-center mb-3">
                     <div class="flex-grow-1">
                       <h6 class="card-title mb-1"><%= milestone.milestonetitle %></h6>
                       <span class="text-muted"><%= milestone.milestonedate.toLocaleDateString() %></span>
-                        <a href="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>?ref=user_profile" class="btn">Edit</a>
+                      <div class="mt-2">
+                        <a href="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>?ref=user_profile" class="text-decoration-none me-3">Edit</a>
+                        <!-- Delete form -->
+                        <form action="/deleteMilestone/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST" class="d-inline">
+                          <button class="btn btn-link text-danger p-0 text-decoration-none" type="submit">Delete</button>
+                        </form>
+                      </div>
                     </div>
                   </div>
                 </div>
