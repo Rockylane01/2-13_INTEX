@@ -30,30 +30,18 @@
     
     
         
-      <div class="nav-links">
-        <a href="/donations">Donations</a>
-      
-        <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
-          <a href="/milestones">Milestones</a>
-          <a href="/events">Events</a> 
-        <% } %>
-      
-        <% if (user && user.userRole === "admin") { %>
-          <div class="dropdown">
-            <button class="dropdown-btn">
-              Admin <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
-            </button>            
-            <div class="dropdown-content">
-              <a href="/users">Users</a>
-              <a href="/events">Manage Events</a>
-              <a href="/surveysDashboard">Surveys</a>
-              <a href="/admin">Admin Home</a>
-            </div>
-          </div>
-        <% } %>
-      </div>
-      
-      <div>
+        <div class="nav-links">
+          <a href="/donations">Donations</a>
+          <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
+            <a href="/milestones">Milestones</a>
+            <a href="/events">Events</a> 
+          <% } %>
+          <% if (user && (user.userRole=== "admin")) { %>
+            <a href="/admin">Admin Portal</a>
+          <% } %>
+        </div>
+
+        <div>
           <a href="/donationform" class="donate-btn">donate</a>
       </div>    
     </nav>
