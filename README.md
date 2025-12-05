@@ -1,6 +1,16 @@
 # 2-13_INTEX
 INTEX code
 
+Website URL: https://intex-ella-rises-env.eba-6bnj5m2y.us-east-2.elasticbeanstalk.com/login
+DNS: http://ellarises2-13.is404.net/
+
+User Login:
+- email: abigail.allen882@ellarises.org
+- password: MemberPassword2
+
+Admin Login:
+- email: mateo.hill2@ellarises.org
+- password: MemberPassword323
 
 RECOMMENDATIONS if approved:
     - require admin approval to have a member (non-guest) account.
