@@ -235,34 +235,69 @@ app.get("/logout", (req, res) => {
 
 app.get("/events", requireRole("participant", "admin"), async (req, res) => {
   try {
-    const events = await knex
-      .select([
-        'events.eventid',
-        'events.eventdatetimestart',
-        'events.eventdatetimeend',
-        'events.eventlocation',
-        'events.eventcapacity',
-        'events.eventregistrationdeadline',
-        'eventtemplates.eventname',
-        'eventtemplates.eventtype',
-        'eventtemplates.eventdescription',
-        'eventtemplates.eventrecurrencepattern'
-      ])
-      .from('events')
-      .join('eventtemplates', 'events.templateid', '=', 'eventtemplates.templateid');
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const offset = (page - 1) * limit;
 
-    res.render('events/events', {
+    // 1️⃣ Count total matching events
+    const countQuery = knex("events")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .count("events.eventid as count");
+
+    if (search) {
+      countQuery.where((builder) => {
+        builder
+          .where("eventtemplates.eventname", "ilike", `%${search}%`)
+          .orWhere("events.eventlocation", "ilike", `%${search}%`);
+      });
+    }
+
+    const totalCount = await countQuery.first();
+    const totalEvents = Number(totalCount.count);
+
+    // 2️⃣ Get paginated events
+    const eventsQuery = knex("events")
+      .join("eventtemplates", "events.templateid", "=", "eventtemplates.templateid")
+      .select(
+        "events.eventid",
+        "events.eventdatetimestart",
+        "events.eventlocation",
+        "eventtemplates.eventname"
+      );
+
+    if (search) {
+      eventsQuery.where((builder) => {
+        builder
+          .where("eventtemplates.eventname", "ilike", `%${search}%`)
+          .orWhere("events.eventlocation", "ilike", `%${search}%`);
+      });
+    }
+
+    const events = await eventsQuery
+      .limit(limit)
+      .offset(offset)
+      .orderBy("events.eventdatetimestart", "asc");
+
+    // 3️⃣ Total pages
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    res.render("events/events", {
       title: "Events",
       active: "events",
+      user: req.session.user,
       userRole: req.session.user.userRole,
-      events
+      events,
+      search,
+      currentPage: page,
+      totalPages
     });
+
   } catch (err) {
     console.error(err);
     res.redirect("/");
   }
 });
-
 
 app.get("/registration/:eventid", async (req, res) => {
   const userID = req.session.user.userID;
