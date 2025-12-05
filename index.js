@@ -323,6 +323,7 @@ app.get("/registration/:eventid", async (req, res) => {
     if (!event) return res.redirect("/");
 
     const now = new Date();
+    const registrationClosed = now >= event.registrationdeadline; // use registration deadline
     const eventEnded = now >= event.eventdatetimeend;
 
     // Fetch current user's registration, joining with registration table
@@ -334,7 +335,7 @@ app.get("/registration/:eventid", async (req, res) => {
       .first();
 
     const registered = !!perow;
-    let showRegisterBtn = !registered && !eventEnded;
+    let showRegisterBtn = !registered && !registrationClosed; // updated logic
     let showCancelBtn = registered && !eventEnded;
 
     // Survey logic: show survey if user attended and hasn't submitted
@@ -412,6 +413,7 @@ app.get("/registration/:eventid", async (req, res) => {
     res.redirect("/");
   }
 });
+
 
 
 
