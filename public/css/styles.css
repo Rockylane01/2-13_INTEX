@@ -598,10 +598,11 @@
   
   .login-wrapper {
     margin-top: 3rem;
-    min-height: 71vh;
+    min-height: 63vh;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 50px;
   }
   
   .login-card {
