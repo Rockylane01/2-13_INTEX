@@ -768,7 +768,7 @@ app.get("/donations", (req, res) => {
           active: "donations",
           donations: donations,
           totalAmount: totalAmount,
-          userRole: req.session.user ? reg.session.user.userRole : null
+          userRole: req.session.user ? req.session.user.userRole : null
         });
 
       });
