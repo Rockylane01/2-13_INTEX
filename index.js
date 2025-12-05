@@ -759,32 +759,33 @@ app.post("/deleteEvent/:id", requireRole("admin"), (req, res) => {
 
 app.get("/donations", async (req, res) => {
   try {
-    const search = req.query.search || "";
+    const search = req.query.search?.trim() || "";
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
     const offset = (page - 1) * limit;
 
-    // SUM total donations (not filtered)
-    const totalRow = await knex("donations").sum("donationamount as total").first();
+    // --- TOTAL DONATIONS SUM (not filtered) ---
+    const totalRow = await knex("donations")
+      .sum("donationamount as total")
+      .first();
     const totalAmount = Number(totalRow.total) || 0;
 
-    // COUNT total records for pagination
+    // --- COUNT QUERY (pagination) ---
     const countQuery = knex("donations").count("donationid as count");
 
     if (search) {
       countQuery.where((builder) => {
         builder
           .where("donorname", "ilike", `%${search}%`)
-          .orWhere("donationamount::text", "ilike", `%${search}%`)
-          .orWhere("donationdate::text", "ilike", `%${search}%`);
+          .orWhereRaw("donationamount::text ilike ?", [`%${search}%`]);
       });
     }
 
-    const totalCount = await countQuery.first();
-    const totalRecords = Number(totalCount.count);
+    const totalCountResult = await countQuery.first();
+    const totalRecords = Number(totalCountResult.count);
     const totalPages = Math.ceil(totalRecords / limit);
 
-    // SELECT donations for this page
+    // --- SELECT FILTERED DONATIONS FOR THIS PAGE ---
     const donationsQuery = knex("donations")
       .select("donationid", "donorname", "donationdate", "donationamount")
       .orderBy("donationdate", "desc")
@@ -795,13 +796,13 @@ app.get("/donations", async (req, res) => {
       donationsQuery.where((builder) => {
         builder
           .where("donorname", "ilike", `%${search}%`)
-          .orWhere("donationamount::text", "ilike", `%${search}%`)
-          .orWhere("donationdate::text", "ilike", `%${search}%`);
+          .orWhereRaw("donationamount::text ilike ?", [`%${search}%`]);
       });
     }
 
     const donations = await donationsQuery;
 
+    // --- RENDER PAGE ---
     res.render("donations/donations", {
       title: "Donations",
       active: "donations",
@@ -818,6 +819,7 @@ app.get("/donations", async (req, res) => {
     res.status(500).send("Error loading donations");
   }
 });
+
 
 
 app.post("/deleteDonation/:id", (req, res) => {
@@ -1301,24 +1303,17 @@ app.post("/donationform", async (req, res) => {
   }
 });
 
-
 app.get("/editdonation/:donationid", requireRole("admin"), async (req, res) => {
   const donationid = req.params.donationid;
 
   try {
     const donation = await knex("donations")
-      .join("members", "donations.memberid", "=", "members.memberid")
-      .select(
-        "donations.*",
-        "members.memberfirstname",
-        "members.memberlastname"
-      )
-      .where("donationid", donationId)
+      .where("donationid", donationid)
       .first();
 
     if (!donation) return res.redirect("/donations");
 
-    res.render("editdonation", {
+    res.render("donations/editdonation", {
       title: "Edit Donation",
       donation
     });
@@ -1328,15 +1323,17 @@ app.get("/editdonation/:donationid", requireRole("admin"), async (req, res) => {
   }
 });
 
-app.post("/editdonation/:donationId", requireRole("admin"), async (req, res) => {
-  const donationId = req.params.donationId;
-  const { donationamount } = req.body;
+app.post("/editdonation/:donationid", requireRole("admin"), async (req, res) => {
+  const donationid = req.params.donationid;
+  const { donorname, donationamount, donationdate } = req.body;
 
   try {
     await knex("donations")
-      .where("donationid", donationId)
+      .where("donationid", donationid)
       .update({
-        donationamount: donationamount
+        donorname,
+        donationamount,
+        donationdate
       });
 
     res.redirect("/donations");
@@ -1346,13 +1343,6 @@ app.post("/editdonation/:donationId", requireRole("admin"), async (req, res) => 
   }
 });
 
-
-app.get("/admin", requireRole("admin"), (req, res) => {
-  res.render("admin/admin", {
-    title: "Admin Dashboard",
-    user: req.session.user
-  });
-});
 
 app.get("/dashboard", requireRole("admin"), (req, res) => {
   res.render("admin/dashboard", {
