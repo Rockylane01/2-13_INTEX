@@ -725,9 +725,8 @@ app.get("/donations", (req, res) => {
     .then(result => {
       let totalAmount = result[0].total || 0;
 
-      knex.select('donations.donationid', 'memberfirstname', 'donationdate', 'donationamount')
+      knex.select('donations.donationid', 'donorname', 'donationdate', 'donationamount')
       .from('donations')
-      .join('members', 'donations.memberid', '=', 'members.memberid')
       .then(donations => {
         res.render('donations/donations', {
           title: "Donations",

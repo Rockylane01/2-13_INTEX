@@ -84,7 +84,7 @@
               <% donations.forEach(donation => { %>
                 <tr>
                   <td>
-                    <%= donation.memberfirstname %>
+                    <%= donation.donorname %>
                   </td>
                   <td class="fw-bold">$<%= donation.donationamount ? donation.donationamount.toLocaleString() : '0' %></td>
                   <td><%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %></td>
