@@ -549,6 +549,15 @@
     border: 1px solid rgba(58, 63, 59, 0.08);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.03);
   }
+
+  .dash-card {
+    display: flex;
+    justify-content: center;
+  }
+
+  .tableauPlaceholder {
+    width: 100%;
+  }
   
   .table thead th {
     background-color: var(--ella-cream);
