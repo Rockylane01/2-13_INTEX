@@ -38,7 +38,7 @@ function requireRole(...allowedRoles) {
   return (req, res, next) => {
     const user = req.session.user;
     if (!user || !allowedRoles.includes(user.userRole)) {
-      return res.redirect("/");
+      return res.status(403).render("errors/403");
     }
     next();
   };
@@ -835,6 +835,9 @@ app.post("/deleteSurvey/:id", async (req, res) => {
 
 
 app.get("/milestones", (req, res) => {
+  const { user } = req.session;
+  if (!user) return res.redirect("/");
+
   knex.select(['milestones.memberid', 'milestonetitle', 'milestones.memberid', 'milestonedate', 'memberfirstname', 'memberlastname'])
     .from('milestones')
     .join('members', 'milestones.memberid', '=', 'members.memberid')
@@ -1214,7 +1217,9 @@ app.get("/admin", requireRole("admin"), (req, res) => {
   });
 });
 
-
+app.use((req, res) => {
+  res.status(404).render("errors/404");
+});
 
 // Start server
 app.listen(PORT, () => {
