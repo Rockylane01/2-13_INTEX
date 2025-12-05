@@ -23,11 +23,6 @@
     <button type="submit">Save Changes</button>
   </form>
 
-  <!-- Delete form -->
-  <form action="/deleteMilestone/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST">
-    <button type="submit">Delete Milestone</button>
-  </form>
-
   <!-- Back link -->
   <a href="/<%= ref === 'user_profile' ? `user_profile/${milestone.memberid}` : 'milestones' %>">Back</a>
 
