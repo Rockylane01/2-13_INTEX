@@ -870,22 +870,83 @@ app.post("/deleteSurvey/:id", async (req, res) => {
   }
 });
 
+// Milestones
+app.get("/milestones", requireRole("admin", "participant"), async (req, res) => {
+  try {
+    const search = req.query.search || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const offset = (page - 1) * limit;
 
-app.get("/milestones", requireRole("admin", "participant"), (req, res) => {
+    // Count total
+    const countQuery = knex("milestones")
+      .count("milestones.memberid as count")
+      .join("members", "milestones.memberid", "members.memberid");
 
-  knex.select(['milestones.memberid', 'milestonetitle', 'milestones.memberid', 'milestonedate', 'memberfirstname', 'memberlastname'])
-    .from('milestones')
-    .join('members', 'milestones.memberid', '=', 'members.memberid')
-    .then(milestones => {
-      res.render("milestones/milestones", {
-        title: "Milestones",
-        active: "milestones",
-        milestones: milestones,
-        userRole: req.session.user.userRole,
-        userID: req.session.user.userID
+    if (search) {
+      countQuery.where((builder) => {
+        builder
+          .where("memberfirstname", "ilike", `%${search}%`)
+          .orWhere("memberlastname", "ilike", `%${search}%`)
+          .orWhere("milestonetitle", "ilike", `%${search}%`);
       });
+    }
+
+    const total = await countQuery.first();
+    const totalCount = Number(total.count);
+
+    // Distinct members count (for cool card)
+    const uniqueMemberCount = await knex("milestones")
+      .distinct("memberid");
+
+    const uniqueMembers = uniqueMemberCount.length;
+
+    // Fetch this page
+    const query = knex("milestones")
+      .select(
+        "milestones.memberid",
+        "milestonetitle",
+        "milestonedate",
+        "members.memberfirstname",
+        "members.memberlastname"
+      )
+      .join("members", "milestones.memberid", "members.memberid")
+      .orderBy("milestonedate", "desc")
+      .limit(limit)
+      .offset(offset);
+
+    if (search) {
+      query.where((builder) => {
+        builder
+          .where("memberfirstname", "ilike", `%${search}%`)
+          .orWhere("memberlastname", "ilike", `%${search}%`)
+          .orWhere("milestonetitle", "ilike", `%${search}%`);
+      });
+    }
+
+    const milestones = await query;
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.render("milestones/milestones", {
+      title: "Milestones",
+      active: "milestones",
+      userRole: req.session.user.userRole,
+      userID: req.session.user.userID,
+      milestones,
+      search,
+      totalCount,
+      uniqueMembers,
+      currentPage: page,
+      totalPages
     });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading milestones");
+  }
 });
+
 
 app.get("/milestoneEdit/:memberid/:title", async (req, res) => {
   const { user } = req.session;
