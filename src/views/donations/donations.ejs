@@ -90,9 +90,11 @@
                   <td><%= donation.donationdate ? donation.donationdate.toLocaleDateString() : 'N/A' %></td>
                   <td>
                     <% if (userRole === "admin") { %>
-                      <a href="/editdonation/<%= donation.donationid %>" class="btn btn-outline-primary btn-sm-pill">
-                        Edit
-                      </a>
+                      <form action="/deleteDonation/<%= donation.donationid %>" method="post">
+                        <button class="btn btn-outline-primary btn-sm-pill" type="submit">
+                          Delete
+                        </button>
+                      </form>
                     <% } %>
                   </td>
                 </tr>
