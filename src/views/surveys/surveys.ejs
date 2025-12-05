@@ -24,6 +24,9 @@
         Feedback submitted by participants for this event
       </p>
     </div>
+    <% if (eventid) { %>
+      <a href="registration/<%= eventid %>" class="btn btn-outline-primary btn-sm-pill">Back</a>
+    <% } %>
 
 <!-- if you have surveys: -->    
     <div class="data-card">
