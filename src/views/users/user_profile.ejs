@@ -84,9 +84,16 @@
     <div class="data-card">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <h4 class="mb-0">Milestones</h4>
-        <% if (milestones.length > 0) { %>
-          <small class="text-muted"><%= milestones.length %> milestone<%= milestones.length === 1 ? '' : 's' %> completed</small>
-        <% } %>
+        <div class="d-flex align-items-center gap-2">
+          <% if (milestones.length > 0) { %>
+            <small class="text-muted"><%= milestones.length %> milestone<%= milestones.length === 1 ? '' : 's' %> completed</small>
+          <% } %>
+            <form action="/milestoneAdd/user_profile">
+              <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Milestone
+              </button>
+            </form>
+        </div>
       </div>
 
       <% if (milestones.length > 0) { %>
