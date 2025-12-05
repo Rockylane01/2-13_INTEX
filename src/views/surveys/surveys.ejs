@@ -18,15 +18,17 @@
   <%- include('../../partials/header') %>
 
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-title">Event Surveys</h1>
-      <p class="page-subtitle">
-        Feedback submitted by participants for this event
-      </p>
+    <div class="survey-btn-align">
+      <div class="page-header">
+        <h1 class="page-title">Event Surveys</h1>
+        <p class="page-subtitle">
+          Feedback submitted by participants for this event
+        </p>
+      </div>
+      <% if (eventid) { %>
+        <a href="registration/<%= eventid %>" id="survey-back-btn" class="btn btn-outline-primary btn-sm-pill">Back</a>
+      <% } %>
     </div>
-    <% if (eventid) { %>
-      <a href="registration/<%= eventid %>" class="btn btn-outline-primary btn-sm-pill">Back</a>
-    <% } %>
 
 <!-- if you have surveys: -->    
     <div class="data-card">

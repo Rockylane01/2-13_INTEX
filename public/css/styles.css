@@ -413,7 +413,16 @@
   color: var(--ella-cream);
 }
 
+.survey-btn-align {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center;
+  margin-bottom: -20px;
+}
 
+/* #survey-back-btn {
+  display: inline;
+} */
 
   /* ===== Footer ===== */
   .ella-rises-banner {
