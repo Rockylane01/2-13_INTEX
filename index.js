@@ -82,7 +82,7 @@ app.get("/", (req, res) => {
 
 
 app.get("/login", (req, res) => {
-  res.render("login/login", { title: "Login", active: "login", user: req.session.user });
+  res.render("login/login", { title: "Login", active: "login", user: req.session.user || null, message: null });
 });
 
 
@@ -92,7 +92,11 @@ app.post("/login", async (req, res) => {
     let { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).send("Please provide email and password");
+      return res.status(400).render("login/login", {
+        title: "Log In",
+        message: "Please provide email and password.",
+        user: null
+      });
     }
 
     email = email.trim();
@@ -105,14 +109,22 @@ app.post("/login", async (req, res) => {
       .first();
 
     if (!user) {
-      return res.status(400).send("Invalid credentials");
+      return res.status(400).render("login/login", {
+        title: "Log In",
+        message: "Invalid credentials.",
+        user: null
+      });
     }
 
     const hashedPassword = user.credpass.trim();
     const valid = await bcrypt.compare(password, hashedPassword);
 
     if (!valid) {
-      return res.status(400).send("Invalid credentials");
+      return res.status(400).render("login/login", {
+        title: "Log In",
+        message: "Invalid credentials.",
+        user: null
+      });
     }
 
     // Fetch member info
@@ -129,9 +141,13 @@ app.post("/login", async (req, res) => {
     };
 
     res.redirect("/");
+
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).render("login/login", {
+      title: "Log In",
+      message: "Server error. Please try again."
+    });
   }
 });
 
