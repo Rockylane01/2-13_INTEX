@@ -35,11 +35,11 @@
     
 <!-- donations and donate are visible to everyone. milestones and events are only visible to participants/admins. the rest are admin-only. -->        
         <div class="nav-links">
-          <a href="/donations">Donations</a>
+          <div class="nav-link-indi"><a href="/donations">Donations</a></div>
         
           <% if (user && (user.userRole === "admin" || user.userRole === "participant")) { %>
-            <a href="/milestones">Milestones</a>
-            <a href="/events">Events</a> 
+            <div class="nav-link-indi"><a href="/milestones">Milestones</a></div>
+            <div class="nav-link-indi"><a href="/events">Events</a></div>
           <% } %>
         
           <% if (user && user.userRole === "admin") { %>
