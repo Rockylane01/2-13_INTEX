@@ -352,6 +352,26 @@
     background-color: #3a3f3bd1;
   }
 
+ /* Quick Amount Buttons (Bigger + Matching Ella Rises Style) */
+.quick-amount-btn {
+  border-radius: 999px;
+  border: 1px solid var(--ella-charcoal);
+  color: var(--ella-charcoal);
+  font-weight: 600;
+  background-color: transparent;
+  padding: 0.55rem 1.4rem; /* 🔥 increased from small size */
+  font-size: 0.95rem;      /* 🔥 slightly bigger text */
+  transition: all 0.2s ease;
+}
+
+.quick-amount-btn:hover,
+.quick-amount-btn.selected {
+  background-color: var(--ella-charcoal);
+  color: var(--ella-cream);
+}
+
+
+
   /* ===== Footer ===== */
   .ella-rises-banner {
     background-color: #000;
