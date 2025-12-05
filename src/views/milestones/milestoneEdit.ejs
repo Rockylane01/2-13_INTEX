@@ -1,30 +1,84 @@
 <!-- This page should only be visible to logged-in admins, OR the user to whom the milestone belongs. -->
 <!-- This page should also be visible to users under the guise of "add milestone", unless we make that a separate page. -->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Edit Milestone</title>
+  <title>Edit Milestone · Ella Rises</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link 
+    href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Montserrat:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/styles.css" rel="stylesheet">
 </head>
+
 <body>
+  <!-- HEADER -->
+  <%- include('../../partials/header') %>
 
-  <h1>Edit Milestone</h1>
+  <div class="container mt-4">
 
-  <!-- Edit form -->
-  <form action="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST">
-    <input type="hidden" name="ref" value="<%= ref || 'milestones' %>">
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <h1 class="page-title">Edit Milestone</h1>
+      <p class="page-subtitle">
+        Update this participant achievement.
+      </p>
+    </div>
 
-    <label>Milestone Title:</label>
-    <input type="text" name="milestonetitle" value="<%= milestone.milestonetitle %>" required>
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <form action="/milestoneEdit/<%= milestone.memberid %>/<%= encodeURIComponent(milestone.milestonetitle) %>" method="POST">
 
-    <label>Achievement Date:</label>
-    <input type="date" name="milestonedate" value="<%= milestone.milestonedate.toISOString().split('T')[0] %>" required>
+        <input type="hidden" name="ref" value="<%= ref || 'milestones' %>">
 
-    <button type="submit">Save Changes</button>
-  </form>
+        <!-- Title -->
+        <div class="mb-3">
+          <label class="form-label">Milestone Title</label>
+          <input 
+            type="text"
+            class="form-control"
+            name="milestonetitle"
+            value="<%= milestone.milestonetitle %>"
+            required
+          >
+        </div>
 
-  <!-- Back link -->
-  <a href="/<%= ref === 'user_profile' ? `user_profile/${milestone.memberid}` : 'milestones' %>">Back</a>
+        <!-- Date -->
+        <div class="mb-3">
+          <label class="form-label">Achievement Date</label>
+          <input
+            type="date"
+            class="form-control"
+            name="milestonedate"
+            value="<%= milestone.milestonedate.toISOString().split('T')[0] %>"
+            required
+          >
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <button type="submit" class="btn btn-primary btn-sm-pill">Save Changes</button>
+
+        <a 
+          href="/<%= ref === 'user_profile' ? `user_profile/${milestone.memberid}` : 'milestones' %>"
+          class="btn btn-secondary btn-sm-pill ms-2"
+        >
+          Cancel
+        </a>
+
+      </form>
+    </div>
+
+    <div class="footer">
+      © <%= new Date().getFullYear() %> Ella Rises · Edit Milestone
+    </div>
+
+  </div>
 
 </body>
 </html>
