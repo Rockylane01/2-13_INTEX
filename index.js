@@ -1252,6 +1252,13 @@ app.get("/admin", requireRole("admin"), (req, res) => {
   });
 });
 
+app.get("/dashboard", requireRole("admin"), (req, res) => {
+  res.render("admin/dashboard", {
+    title: "Analytics Dashboard",
+    active: "dashboard"
+  });
+});
+
 app.use((req, res) => {
   res.status(404).render("errors/404");
 });
