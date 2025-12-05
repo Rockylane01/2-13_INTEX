@@ -1157,7 +1157,7 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
 
   // participants can only view their own profile
   if (req.session.user.userRole === "participant" && req.session.user.userID != memberid) {
-    return res.status(403).send("Access denied");
+    return res.status(403).render("errors/403");
   }
 
   knex.select('*')
