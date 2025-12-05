@@ -1185,26 +1185,44 @@ app.get("/user_profile/:id", requireRole("participant", "admin"), (req, res) => 
     return res.status(403).render("errors/403");
   }
 
-  knex.select('*')
-    .from('members')
-    .where('members.memberid', memberid)
+  knex("members")
+    .where("members.memberid", memberid)
     .first()
     .then(user => {
       if (!user) return res.status(404).send("User not found");
 
-      knex.select(['memberid', 'milestonetitle', 'milestonedate'])
-        .from('milestones')
-        .where('milestones.memberid', memberid)
-        .then(milestones => {
+      // get milestones
+      return knex("milestones")
+        .where("milestones.memberid", memberid)
+        .select(["memberid", "milestonetitle", "milestonedate"])
+        .then(milestones => ({ user, milestones }));
+    })
+    .then(data => {
+      const { user, milestones } = data;
+
+      // get total donations for this member
+      return knex("donations")
+        .where("donations.memberid", memberid)
+        .sum("donationamount as total")
+        .first()
+        .then(totalObj => {
+          const totalDonations = totalObj.total || 0;
+
           res.render("users/user_profile", {
             title: "User Profile",
             active: "users",
             profileUser: user,
-            milestones
+            milestones,
+            totalDonations
           });
         });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send("Server error");
     });
 });
+
 
 // Edit user
 app.get("/editUser/:id", requireRole("admin"), async (req, res) => {
